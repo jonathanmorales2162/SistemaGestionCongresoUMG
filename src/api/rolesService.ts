@@ -1,5 +1,5 @@
 import axiosInstance from './axiosConfig';
-import type { Rol, RolResponse } from '../types/Rol';
+import type { Rol } from '../types/Rol';
 
 export const rolesService = {
   // Obtener todos los roles disponibles

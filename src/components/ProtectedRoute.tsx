@@ -32,16 +32,16 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   // Si se requiere un rol específico, verificar que el usuario lo tenga
-  if (requiredRole && usuario?.rol !== requiredRole) {
-    return (
-      <div className="access-denied">
-        <h2>Acceso Denegado</h2>
-        <p>No tienes permisos para acceder a esta página.</p>
-        <p>Rol requerido: {requiredRole}</p>
-        <p>Tu rol: {usuario?.rol}</p>
-      </div>
-    );
-  }
+if (requiredRole && String(usuario?.id_rol) !== requiredRole) {
+  return (
+    <div className="access-denied">
+      <h2>Acceso Denegado</h2>
+      <p>No tienes permisos para acceder a esta página.</p>
+      <p>Rol requerido: {requiredRole}</p>
+      <p>Tu rol: {String(usuario?.id_rol)}</p>
+    </div>
+  );
+}
 
   // Si todo está bien, renderizar el componente hijo
   return <>{children}</>;

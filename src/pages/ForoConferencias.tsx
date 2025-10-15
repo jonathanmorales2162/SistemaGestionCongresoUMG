@@ -17,7 +17,6 @@ interface ForoData {
 }
 
 const ForoConferencias: React.FC = () => {
-  const { usuario } = useAuth();
   const [filtroCategoria, setFiltroCategoria] = useState<string>('todas');
   const [filtroEstado, setFiltroEstado] = useState<string>('todos');
 
