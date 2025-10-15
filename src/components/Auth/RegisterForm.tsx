@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { UsuarioRegistro } from '../../types/Usuario';
-import { Rol } from '../../types/Rol';
+import type { UsuarioRegistro } from '../../types/Usuario';
+import type { Rol } from '../../types/Rol';
 import { rolesService } from '../../api/rolesService';
 
 const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState<UsuarioRegistro>({
     nombre: '',
-    email: '',
+    correo: '',
     password: '',
     telefono: '',
-    institucion: '',
-    rol: 'Participante'
+    colegio: '',
+    tipo: 'E',
+    id_rol: 1
   });
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [roles, setRoles] = useState<Rol[]>([]);
@@ -58,13 +59,13 @@ const RegisterForm: React.FC = () => {
   };
 
   const validateForm = (): boolean => {
-    if (!formData.nombre || !formData.email || !formData.password) {
+    if (!formData.nombre || !formData.correo || !formData.password) {
       setError('Por favor, completa todos los campos obligatorios');
       return false;
     }
 
-    if (!formData.email.includes('@')) {
-      setError('Por favor, ingresa un email válido');
+    if (!formData.correo.includes('@')) {
+      setError('Por favor, ingresa un correo válido');
       return false;
     }
 
@@ -138,8 +139,8 @@ const RegisterForm: React.FC = () => {
               <input
                 type="email"
                 id="email"
-                name="email"
-                value={formData.email}
+                name="correo"
+                value={formData.correo}
                 onChange={handleChange}
                 placeholder="tu@email.com"
                 required
@@ -198,8 +199,8 @@ const RegisterForm: React.FC = () => {
               <input
                 type="text"
                 id="institucion"
-                name="institucion"
-                value={formData.institucion}
+                name="colegio"
+                value={formData.colegio}
                 onChange={handleChange}
                 placeholder="Universidad, empresa, etc."
                 disabled={isLoading}
@@ -211,8 +212,8 @@ const RegisterForm: React.FC = () => {
             <label htmlFor="rol">Rol</label>
             <select
               id="rol"
-              name="rol"
-              value={formData.rol}
+              name="id_rol"
+              value={formData.id_rol}
               onChange={handleChange}
               disabled={isLoading}
             >

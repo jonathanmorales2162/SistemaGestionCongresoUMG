@@ -1,6 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from '../context/AuthContext';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from '../components/ProtectedRoute';
 
 // Importar páginas
@@ -15,8 +14,6 @@ import RegisterForm from '../components/Auth/RegisterForm';
 
 const AppRouter: React.FC = () => {
   return (
-    <Router>
-      <AuthProvider>
         <Routes>
           {/* Rutas públicas */}
           <Route path="/" element={<LandingPage />} />
@@ -67,8 +64,6 @@ const AppRouter: React.FC = () => {
           {/* Página 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </AuthProvider>
-    </Router>
   );
 };
 

@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Usuario, UsuarioLogin, UsuarioRegistro } from '../types/Usuario';
+import { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
+import type { Usuario, UsuarioLogin, UsuarioRegistro, AuthResponse } from '../types/Usuario';
 import { usuariosService } from '../api/usuariosService';
 
 interface AuthContextType {
@@ -53,14 +54,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (credenciales: UsuarioLogin): Promise<void> => {
     try {
       setIsLoading(true);
+      console.log('AuthContext: Enviando credenciales al servicio');
       const response = await usuariosService.login(credenciales);
+      console.log('AuthContext: Respuesta recibida:', response);
+      console.log('AuthContext: Tipo de respuesta:', typeof response);
+      console.log('AuthContext: Claves de la respuesta:', Object.keys(response));
+      console.log('AuthContext: response.token:', response.token);
+      console.log('AuthContext: response.usuario:', response.usuario);
+      console.log('AuthContext: Tipo de response.usuario:', typeof response.usuario);
+      
+      // Verificar si la respuesta tiene la estructura esperada
+      if (!response.token) {
+        console.error('AuthContext: No se encontró token en la respuesta');
+        throw new Error('Token no encontrado en la respuesta del servidor');
+      }
+      
+      if (!response.usuario) {
+        console.error('AuthContext: No se encontró usuario en la respuesta');
+        throw new Error('Datos de usuario no encontrados en la respuesta del servidor');
+      }
       
       // Guardar token y usuario en localStorage
       localStorage.setItem('token', response.token);
       localStorage.setItem('usuario', JSON.stringify(response.usuario));
       
+      // Actualizar el estado del usuario
       setUsuario(response.usuario);
+      console.log('AuthContext: Usuario establecido:', response.usuario);
+      
+      // Asegurar que el estado se actualice antes de continuar
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          console.log('AuthContext: Login completado, estado actualizado');
+          resolve();
+        }, 100);
+      });
     } catch (error: any) {
+      console.error('AuthContext: Error en login:', error);
       throw new Error(error.message || 'Error en el login');
     } finally {
       setIsLoading(false);
@@ -74,7 +104,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       // Guardar token y usuario en localStorage
       localStorage.setItem('token', response.token);
-      localStorage.setItem('usuario', JSON.stringify(response.usuario));
+      localStorage.setItem('usuario', JSON.stringify(response.usuario.nombre));
       
       setUsuario(response.usuario);
     } catch (error: any) {

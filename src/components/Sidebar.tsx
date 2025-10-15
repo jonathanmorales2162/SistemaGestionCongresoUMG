@@ -102,8 +102,8 @@ const Sidebar: React.FC = () => {
   };
 
   const hasPermission = (item: SidebarItem) => {
-    if (!item.roles || !usuario?.rol) return true;
-    return item.roles.includes(usuario.rol.nombre);
+    if (!item.roles || !usuario?.id_rol) return true;
+    return item.roles.includes(usuario.id_rol.toString());
   };
 
   const renderSidebarItem = (item: SidebarItem, level: number = 0) => {
@@ -179,7 +179,7 @@ const Sidebar: React.FC = () => {
           </div>
           <div className="user-details">
             <div className="user-name">{usuario.nombre}</div>
-            <div className="user-role">{usuario.rol?.nombre}</div>
+            <div className="user-role">{usuario.id_rol?.toString()}</div>
           </div>
         </div>
       )}

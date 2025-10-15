@@ -114,8 +114,8 @@ const Navbar: React.FC = () => {
                   <div className="dropdown-header">
                     <div className="user-info">
                       <strong>{usuario.nombre} {usuario.apellido}</strong>
-                      <span className="user-email">{usuario.email}</span>
-                      <span className="user-role">{usuario.rol?.nombre}</span>
+                      <span className="user-email">{usuario.correo}</span>
+                      <span className="user-role">{usuario.id_rol?.toString()}</span>
                     </div>
                   </div>
                   <div className="dropdown-divider"></div>

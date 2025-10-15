@@ -1,13 +1,16 @@
 import axiosInstance from './axiosConfig';
-import { UsuarioLogin, UsuarioRegistro, AuthResponse, Usuario } from '../types/Usuario';
+import type { UsuarioLogin, UsuarioRegistro, AuthResponse, Usuario } from '../types/Usuario';
 
 export const usuariosService = {
   // Login de usuario
   login: async (credenciales: UsuarioLogin): Promise<AuthResponse> => {
     try {
+      console.log('Enviando petición de login a:', '/usuarios/login');
       const response = await axiosInstance.post('/usuarios/login', credenciales);
+      console.log('Respuesta del backend:', response.data);
       return response.data;
     } catch (error: any) {
+      console.error('Error en petición de login:', error);
       throw new Error(error.response?.data?.message || 'Error en el login');
     }
   },

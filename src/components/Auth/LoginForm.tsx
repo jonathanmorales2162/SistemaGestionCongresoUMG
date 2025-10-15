@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { UsuarioLogin } from '../../types/Usuario';
+import type { UsuarioLogin } from '../../types/Usuario';
 
 const LoginForm: React.FC = () => {
   const [formData, setFormData] = useState<UsuarioLogin>({
-    email: '',
+    correo: '',
     password: ''
   });
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -17,6 +18,10 @@ const LoginForm: React.FC = () => {
 
   // Obtener la ruta desde donde vino el usuario
   const from = location.state?.from?.pathname || '/dashboard';
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(prev => !prev);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -34,23 +39,26 @@ const LoginForm: React.FC = () => {
     setIsLoading(true);
 
     // Validaciones básicas
-    if (!formData.email || !formData.password) {
+    if (!formData.correo || !formData.password) {
       setError('Por favor, completa todos los campos');
       setIsLoading(false);
       return;
     }
 
-    if (!formData.email.includes('@')) {
-      setError('Por favor, ingresa un email válido');
+    if (!formData.correo.includes('@')) {
+      setError('Por favor, ingresa un correo válido');
       setIsLoading(false);
       return;
     }
 
     try {
+      console.log('Iniciando login con:', formData);
       await login(formData);
+      console.log('Login exitoso, redirigiendo a:', from);
       // Redirigir a la página desde donde vino o al dashboard
       navigate(from, { replace: true });
     } catch (error: any) {
+      console.error('Error en login:', error);
       setError(error.message || 'Error en el login');
     } finally {
       setIsLoading(false);
@@ -78,8 +86,8 @@ const LoginForm: React.FC = () => {
             <input
               type="email"
               id="email"
-              name="email"
-              value={formData.email}
+              name="correo"
+              value={formData.correo}
               onChange={handleChange}
               placeholder="tu@email.com"
               required
@@ -89,16 +97,27 @@ const LoginForm: React.FC = () => {
 
           <div className="form-group">
             <label htmlFor="password">Contraseña</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="••••••••"
-              required
-              disabled={isLoading}
-            />
+            <div className="password-input-container">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                required
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={togglePasswordVisibility}
+                disabled={isLoading}
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
           </div>
 
           <button 

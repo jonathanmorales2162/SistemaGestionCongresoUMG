@@ -94,7 +94,7 @@ const Dashboard: React.FC = () => {
             <div className="welcome-section">
               <h1>¡Bienvenido, {usuario?.nombre}!</h1>
               <p className="user-info">
-                {usuario?.rol} • {usuario?.institucion || 'Sin institución'}
+                {usuario?.id_rol} • {usuario?.colegio || 'Sin colegio'}
               </p>
             </div>
             <div className="user-stats">
