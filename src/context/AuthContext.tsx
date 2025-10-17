@@ -104,7 +104,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       // Guardar token y usuario en localStorage
       localStorage.setItem('token', response.token);
-      localStorage.setItem('usuario', JSON.stringify(response.usuario.nombre));
+      localStorage.setItem('usuario', JSON.stringify(response.usuario));
       
       setUsuario(response.usuario);
     } catch (error: any) {

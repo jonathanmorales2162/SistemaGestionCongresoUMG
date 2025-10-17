@@ -2,15 +2,20 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import type { UsuarioLogin } from '../../types/Usuario';
+import Notification from '../Notification';
 
 const LoginForm: React.FC = () => {
   const [formData, setFormData] = useState<UsuarioLogin>({
     correo: '',
     password: ''
   });
-  const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [notification, setNotification] = useState({
+    message: '',
+    type: 'success' as 'success' | 'error',
+    isVisible: false
+  });
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -18,6 +23,21 @@ const LoginForm: React.FC = () => {
 
   // Obtener la ruta desde donde vino el usuario
   const from = location.state?.from?.pathname || '/dashboard';
+
+  const showNotification = (message: string, type: 'success' | 'error') => {
+    setNotification({
+      message,
+      type,
+      isVisible: true
+    });
+  };
+
+  const hideNotification = () => {
+    setNotification(prev => ({
+      ...prev,
+      isVisible: false
+    }));
+  };
 
   const togglePasswordVisibility = () => {
     setShowPassword(prev => !prev);
@@ -29,24 +49,21 @@ const LoginForm: React.FC = () => {
       ...prev,
       [name]: value
     }));
-    // Limpiar error cuando el usuario empiece a escribir
-    if (error) setError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setIsLoading(true);
 
     // Validaciones básicas
     if (!formData.correo || !formData.password) {
-      setError('Por favor, completa todos los campos');
+      showNotification('Por favor, completa todos los campos', 'error');
       setIsLoading(false);
       return;
     }
 
     if (!formData.correo.includes('@')) {
-      setError('Por favor, ingresa un correo válido');
+      showNotification('Por favor, ingresa un correo válido', 'error');
       setIsLoading(false);
       return;
     }
@@ -55,11 +72,17 @@ const LoginForm: React.FC = () => {
       console.log('Iniciando login con:', formData);
       await login(formData);
       console.log('Login exitoso, redirigiendo a:', from);
-      // Redirigir a la página desde donde vino o al dashboard
-      navigate(from, { replace: true });
+      
+      // Mostrar notificación de bienvenida
+      showNotification('¡Bienvenido! Inicio de sesión exitoso', 'success');
+      
+      // Redirigir después de un breve delay para mostrar la notificación
+      setTimeout(() => {
+        navigate(from, { replace: true });
+      }, 2000);
     } catch (error: any) {
       console.error('Error en login:', error);
-      setError(error.message || 'Error en el login');
+      showNotification(error.message || 'Error en el inicio de sesión', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -67,6 +90,18 @@ const LoginForm: React.FC = () => {
 
   return (
     <div className="auth-container">
+      <Notification
+        message={notification.message}
+        type={notification.type}
+        isVisible={notification.isVisible}
+        onClose={hideNotification}
+      />
+      
+      {/* Botón de retorno a la landing page */}
+      <Link to="/" className="back-to-home-btn">
+        ← Volver al inicio
+      </Link>
+      
       <div className="auth-card">
         <div className="auth-header">
           <h1>Iniciar Sesión</h1>
@@ -74,13 +109,6 @@ const LoginForm: React.FC = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
-          {error && (
-            <div className="error-message">
-              <span className="error-icon">⚠️</span>
-              {error}
-            </div>
-          )}
-
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input

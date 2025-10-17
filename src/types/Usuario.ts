@@ -18,6 +18,7 @@ export interface UsuarioLogin {
 
 export interface UsuarioRegistro {
   nombre: string;
+  apellido: string;
   correo: string;
   password: string;
   telefono?: string;

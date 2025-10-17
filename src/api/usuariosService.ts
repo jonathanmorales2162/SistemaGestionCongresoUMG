@@ -18,17 +18,17 @@ export const usuariosService = {
   // Registro de usuario
   register: async (datosUsuario: UsuarioRegistro): Promise<AuthResponse> => {
     try {
-      const response = await axiosInstance.post('/usuarios/register', datosUsuario);
+      const response = await axiosInstance.post('/usuarios', datosUsuario);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Error en el registro');
     }
   },
 
-  // Validar token JWT
+  // Validar token JWT - No hay endpoint específico en la documentación, mantenemos uno genérico
   validateToken: async (): Promise<Usuario> => {
     try {
-      const response = await axiosInstance.get('/usuarios/validate');
+      const response = await axiosInstance.get('/usuarios/perfil');
       return response.data.usuario;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Token inválido');
@@ -38,7 +38,7 @@ export const usuariosService = {
   // Obtener perfil del usuario
   getProfile: async (): Promise<Usuario> => {
     try {
-      const response = await axiosInstance.get('/usuarios/profile');
+      const response = await axiosInstance.get('/usuarios/perfil');
       return response.data.usuario;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Error al obtener perfil');
@@ -48,7 +48,7 @@ export const usuariosService = {
   // Actualizar perfil del usuario
   updateProfile: async (datosActualizados: Partial<Usuario>): Promise<Usuario> => {
     try {
-      const response = await axiosInstance.put('/usuarios/profile', datosActualizados);
+      const response = await axiosInstance.put('/usuarios/perfil', datosActualizados);
       return response.data.usuario;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Error al actualizar perfil');
