@@ -5,7 +5,7 @@ const InscripcionesPanel: React.FC = () => {
     <div className="inscripciones-panel">
       <div className="page-header">
         <h2 className="page-title">Gestión de Inscripciones</h2>
-        <p className="page-subtitle">Administra las inscripciones al Congreso Tecnológico UMG 2024</p>
+        <p className="page-subtitle">Administra las inscripciones al Congreso Tecnológico UMG 2025</p>
       </div>
 
       <div className="panel-content">

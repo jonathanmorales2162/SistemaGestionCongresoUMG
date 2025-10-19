@@ -81,14 +81,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Actualizar el estado del usuario
       setUsuario(response.usuario);
       console.log('AuthContext: Usuario establecido:', response.usuario);
-      
-      // Asegurar que el estado se actualice antes de continuar
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          console.log('AuthContext: Login completado, estado actualizado');
-          resolve();
-        }, 100);
-      });
+      console.log('AuthContext: Login completado, estado actualizado');
     } catch (error: any) {
       console.error('AuthContext: Error en login:', error);
       throw new Error(error.message || 'Error en el login');

@@ -73,9 +73,9 @@ const DashboardHome: React.FC = () => {
         <h2 className="welcome-title">
           ¡Bienvenido, {usuario?.nombre}! 👋
         </h2>
-        <p className="welcome-subtitle">
-          Aquí tienes un resumen de la actividad del Congreso Tecnológico UMG 2024
-        </p>
+        <p className="page-subtitle">
+            Aquí tienes un resumen de la actividad del Congreso Tecnológico UMG 2025
+          </p>
       </div>
 
       {/* Stats Cards */}

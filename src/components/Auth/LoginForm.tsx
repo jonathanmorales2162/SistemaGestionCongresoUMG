@@ -73,13 +73,8 @@ const LoginForm: React.FC = () => {
       await login(formData);
       console.log('Login exitoso, redirigiendo a:', from);
       
-      // Mostrar notificación de bienvenida
-      showNotification('¡Bienvenido! Inicio de sesión exitoso', 'success');
-      
-      // Redirigir después de un breve delay para mostrar la notificación
-      setTimeout(() => {
-        navigate(from, { replace: true });
-      }, 2000);
+      // Redirigir inmediatamente después del login exitoso
+      navigate(from, { replace: true });
     } catch (error: any) {
       console.error('Error en login:', error);
       showNotification(error.message || 'Error en el inicio de sesión', 'error');

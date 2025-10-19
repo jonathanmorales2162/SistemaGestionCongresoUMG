@@ -88,13 +88,13 @@ const DiplomasPanel: React.FC = () => {
             <div className="diploma-mockup">
               <div className="diploma-header">
                 <h5>Universidad Mariano Gálvez</h5>
-                <p>Congreso Tecnológico 2024</p>
+                <p>Congreso Tecnológico 2025</p>
               </div>
               <div className="diploma-content">
                 <h6>Certificado de Participación</h6>
                 <p>Se otorga a:</p>
                 <div className="participant-name">[Nombre del Participante]</div>
-                <p>Por su participación en el Congreso Tecnológico UMG 2024</p>
+                <p>Por su participación en el Congreso Tecnológico UMG 2025</p>
               </div>
               <div className="diploma-footer">
                 <div className="signature-section">

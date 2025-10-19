@@ -54,11 +54,11 @@ const LandingPage: React.FC = () => {
         <div className="hero-content">
           <div className="hero-text">
             <div className="hero-badge">
-              <span className="badge-text">🎯 Evento 2024</span>
+              <span className="badge-text">🎯 Evento 2025</span>
             </div>
             <h1 className="hero-title">
               <span className="title-line">Congreso Tecnológico</span>
-              <span className="title-highlight">UMG 2024</span>
+              <span className="title-highlight">UMG 2025</span>
               <div className="title-underline"></div>
             </h1>
             <p className="hero-subtitle">
@@ -186,7 +186,7 @@ const LandingPage: React.FC = () => {
             <div className="timeline-day">
               <div className="day-header">
                 <h3>Día 1</h3>
-                <span className="day-date">15 de Marzo</span>
+                <span className="day-date">15 de Octubre</span>
               </div>
               <div className="day-events">
                 <div className="event-item">
@@ -215,7 +215,7 @@ const LandingPage: React.FC = () => {
             <div className="timeline-day">
               <div className="day-header">
                 <h3>Día 2</h3>
-                <span className="day-date">16 de Marzo</span>
+                <span className="day-date">16 de Octubre</span>
               </div>
               <div className="day-events">
                 <div className="event-item">
@@ -244,7 +244,7 @@ const LandingPage: React.FC = () => {
             <div className="timeline-day">
               <div className="day-header">
                 <h3>Día 3</h3>
-                <span className="day-date">17 de Marzo</span>
+                <span className="day-date">17 de Octubre</span>
               </div>
               <div className="day-events">
                 <div className="event-item">
@@ -350,7 +350,7 @@ const LandingPage: React.FC = () => {
             <div className="testimonial-card">
               <div className="testimonial-content">
                 <div className="quote-icon">"</div>
-                <p>"El congreso UMG 2023 cambió mi perspectiva sobre la tecnología. Las conferencias fueron increíbles y el networking me ayudó a conseguir mi trabajo actual."</p>
+                <p>"El congreso UMG 2024 cambió mi perspectiva sobre la tecnología. Las conferencias fueron increíbles y el networking me ayudó a conseguir mi trabajo actual."</p>
               </div>
               <div className="testimonial-author">
                 <div className="author-avatar">👨‍🎓</div>

@@ -566,9 +566,9 @@
 .main-content {
   flex: 1;
   margin-left: 280px;
-  padding: 2rem;
+  padding: 2.5rem 3rem;
   transition: margin-left 0.3s ease;
-  background-color: var(--bg-primary);
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--surface-100) 100%);
   min-height: calc(100vh - 4rem);
 }
 
@@ -579,7 +579,7 @@
 @media (max-width: 768px) {
   .main-content {
     margin-left: 0;
-    padding: 1rem;
+    padding: 1.5rem;
   }
   
   .sidebar {
