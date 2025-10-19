@@ -604,6 +604,33 @@
   }
 }
 
+/* ===== FOROS LAYOUT (WITHOUT SIDEBAR) ===== */
+.foros-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.foros-content {
+  display: flex;
+  flex: 1;
+  padding-top: 4rem; /* Height of navbar */
+}
+
+.foros-content .main-content {
+  flex: 1;
+  margin-left: 0; /* No sidebar margin */
+  padding: 2.5rem 3rem;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--surface-100) 100%);
+  min-height: calc(100vh - 4rem);
+}
+
+@media (max-width: 768px) {
+  .foros-content .main-content {
+    padding: 1.5rem;
+  }
+}
+
 /* ===== PAGE STYLES ===== */
 .page-header {
   display: flex;

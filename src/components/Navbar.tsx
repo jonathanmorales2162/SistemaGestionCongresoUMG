@@ -81,16 +81,10 @@ const Navbar: React.FC = () => {
                 🏠 Inicio
               </Link>
               <Link 
-                to="/about" 
-                className={`nav-link ${isActivePath('/about') ? 'active' : ''}`}
+                to="/foros" 
+                className={`nav-link ${isActivePath('/foros') ? 'active' : ''}`}
               >
-                ℹ️ Acerca de
-              </Link>
-              <Link 
-                to="/contact" 
-                className={`nav-link ${isActivePath('/contact') ? 'active' : ''}`}
-              >
-                📞 Contacto
+                💬 Foros
               </Link>
             </>
           )}
@@ -205,18 +199,11 @@ const Navbar: React.FC = () => {
                   🏠 Inicio
                 </Link>
                 <Link 
-                  to="/about" 
-                  className={`mobile-nav-link ${isActivePath('/about') ? 'active' : ''}`}
+                  to="/foros" 
+                  className={`mobile-nav-link ${isActivePath('/foros') ? 'active' : ''}`}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  ℹ️ Acerca de
-                </Link>
-                <Link 
-                  to="/contact" 
-                  className={`mobile-nav-link ${isActivePath('/contact') ? 'active' : ''}`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  📞 Contacto
+                  💬 Foros
                 </Link>
                 <div className="mobile-menu-divider"></div>
                 <Link 

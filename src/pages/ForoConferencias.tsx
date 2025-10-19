@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 // import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
-import Sidebar from '../components/Sidebar';
 
 interface ForoData {
   id: number;
@@ -124,10 +123,9 @@ const ForoConferencias: React.FC = () => {
   };
 
   return (
-    <div className="dashboard-layout">
+    <div className="foros-layout">
       <Navbar />
-      <div className="dashboard-content">
-        <Sidebar />
+      <div className="foros-content">
         <main className="main-content">
           {/* Header */}
           <div className="page-header">
