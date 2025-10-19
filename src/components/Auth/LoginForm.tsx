@@ -69,9 +69,7 @@ const LoginForm: React.FC = () => {
     }
 
     try {
-      console.log('Iniciando login con:', formData);
       await login(formData);
-      console.log('Login exitoso, redirigiendo a:', from);
       
       // Redirigir inmediatamente después del login exitoso
       navigate(from, { replace: true });

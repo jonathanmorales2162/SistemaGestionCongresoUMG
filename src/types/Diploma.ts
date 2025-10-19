@@ -16,10 +16,20 @@ export interface Diploma {
   taller?: {
     id_taller: number;
     titulo: string;
+    descripcion: string;
+    ponente?: {
+      nombre: string;
+      apellido: string;
+    };
   };
   competencia?: {
     id_competencia: number;
     titulo: string;
+    descripcion: string;
+    responsable?: {
+      nombre: string;
+      apellido: string;
+    };
   };
 }
 

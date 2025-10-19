@@ -86,13 +86,10 @@ const Profile: React.FC = () => {
       };
       reader.readAsDataURL(file);
 
-      console.log('🔄 Iniciando subida de imagen a Cloudinary...');
-      
       // PASO 1: Subir imagen a Cloudinary
       const uploadResult = await uploadImageCloudinary(file);
       
       if (uploadResult.success && uploadResult.url) {
-        console.log('✅ Imagen subida exitosamente a Cloudinary:', uploadResult.url);
         
         // PASO 2: Actualizar el estado del formulario con la URL de Cloudinary
         setFormData(prev => ({
@@ -105,7 +102,6 @@ const Profile: React.FC = () => {
         setImageError(false); // Limpiar estado de error
         setMessage({ type: 'success', text: 'Imagen cargada exitosamente. Recuerda guardar los cambios.' });
         
-        console.log('📝 URL de imagen guardada en formData.foto_url:', uploadResult.url);
       } else {
         console.error('❌ Error al subir imagen a Cloudinary:', uploadResult.error);
         setMessage({ type: 'error', text: uploadResult.error || 'Error al cargar la imagen' });
@@ -129,8 +125,6 @@ const Profile: React.FC = () => {
     setMessage(null);
 
     try {
-      console.log('🔄 Iniciando actualización de perfil...');
-      
       // PASO 3: Preparar datos para enviar al backend (PUT)
       const updateData: Partial<ProfileFormData> = {
         nombre: formData.nombre,
@@ -142,15 +136,10 @@ const Profile: React.FC = () => {
       // Solo incluir foto_perfil si se cambió (contiene la URL de Cloudinary)
       if (formData.foto_url !== usuario?.foto_url) {
         updateData.foto_url = formData.foto_url; // URL de Cloudinary obtenida en handleImageChange
-        console.log('📸 Incluyendo nueva foto_url en PUT:', updateData.foto_url);
       }
-
-      console.log('📤 Datos a enviar en PUT /usuarios/:id:', updateData);
 
       // PASO 4: Enviar PUT al backend con la URL de Cloudinary
       const usuarioActualizado = await usuariosService.updateProfile(updateData);
-      
-      console.log('✅ Perfil actualizado exitosamente:', usuarioActualizado);
       
       // Verificar que tenemos un usuario válido antes de actualizar el contexto
       if (usuarioActualizado && typeof usuarioActualizado === 'object') {

@@ -30,7 +30,7 @@ const Talleres: React.FC = () => {
     }
   };
 
-  const manejarInscripcion = async (tallerId: number) => {
+  const manejarInscripcion = async (_tallerId: number) => {
     if (!isAuthenticated) {
       navigate('/login');
       return;
@@ -38,7 +38,7 @@ const Talleres: React.FC = () => {
 
     try {
       // Aquí iría la lógica de inscripción usando inscripcionesService
-      console.log('Inscribiendo al taller:', tallerId);
+  
       alert('¡Inscripción exitosa!');
     } catch (err) {
       console.error('Error en inscripción:', err);

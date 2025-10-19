@@ -21,7 +21,7 @@ const PerfilUsuario: React.FC = () => {
 
   const handleSave = () => {
     // Aquí iría la lógica para guardar los cambios
-    console.log('Guardando cambios:', formData);
+
     setIsEditing(false);
   };
 

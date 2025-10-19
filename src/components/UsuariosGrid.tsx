@@ -24,7 +24,7 @@ const UsuariosGrid: React.FC<UsuariosGridProps> = () => {
       setLoading(true);
       const response = await usuariosService.obtenerUsuarios(page, 10, search);
       
-      console.log('Respuesta completa del servidor:', response);
+
       
       // Verificar si la respuesta es un array directamente o tiene estructura de objeto
       if (Array.isArray(response)) {

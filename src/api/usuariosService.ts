@@ -5,9 +5,7 @@ export const usuariosService = {
   // Login de usuario
   login: async (credenciales: UsuarioLogin): Promise<AuthResponse> => {
     try {
-      console.log('Enviando petición de login a:', '/usuarios/login');
       const response = await axiosInstance.post('/usuarios/login', credenciales);
-      console.log('Respuesta del backend:', response.data);
       return response.data;
     } catch (error: unknown) {
       console.error('Error en petición de login:', error);
@@ -123,7 +121,6 @@ export const usuariosService = {
       
       // Enviar PUT al backend usando el endpoint correcto según documentación
       const endpoint = `/usuarios/perfil`;
-      console.log(`🚀 Enviando PUT a ${endpoint}:`, datosActualizados);
       
       const response = await axiosInstance.put(endpoint, datosActualizados);
       
@@ -156,7 +153,6 @@ export const usuariosService = {
         
         // Si tenemos un usuario válido, retornarlo
         if (usuarioActualizado && typeof usuarioActualizado === 'object' && usuarioActualizado.id_usuario) {
-          console.log('✅ Perfil actualizado exitosamente');
           return usuarioActualizado;
         }
         
@@ -198,8 +194,8 @@ export const usuariosService = {
   }> => {
     try {
       const params = new URLSearchParams({
-        pagina: pagina.toString(),
-        limite: limite.toString(),
+        page: pagina.toString(),
+        limit: limite.toString(),
         ...(busqueda && { busqueda })
       });
       

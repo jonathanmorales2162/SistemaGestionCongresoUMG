@@ -30,7 +30,7 @@ const Competencias: React.FC = () => {
     }
   };
 
-  const manejarInscripcion = async (competenciaId: number) => {
+  const manejarInscripcion = async (_competenciaId: number) => {
     if (!isAuthenticated) {
       navigate('/login');
       return;
@@ -38,7 +38,7 @@ const Competencias: React.FC = () => {
 
     try {
       // Aquí iría la lógica de inscripción usando inscripcionesService
-      console.log('Inscribiendo a la competencia:', competenciaId);
+  
       alert('¡Inscripción exitosa!');
     } catch (err) {
       console.error('Error en inscripción:', err);

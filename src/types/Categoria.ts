@@ -1,7 +1,9 @@
 export interface Categoria {
   id_categoria: number;
   nombre: string;
-  descripcion?: string;
+  descripcion: string;
+  fecha_creacion: string;
+  activo: boolean;
 }
 
 export interface CategoriaResponse {

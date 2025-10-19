@@ -15,11 +15,15 @@ export interface Asistencia {
   taller?: {
     id_taller: number;
     titulo: string;
+    descripcion: string;
+    cupo: number;
     horario: string;
   };
   competencia?: {
     id_competencia: number;
     titulo: string;
+    descripcion: string;
+    cupo: number;
     horario: string;
   };
 }

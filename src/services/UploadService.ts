@@ -26,8 +26,6 @@ export const uploadImageCloudinary = async (file: File): Promise<{ success: bool
     return { success: false, error };
   }
 
-  console.log("📤 Preparando subida a Cloudinary...");
-  
   // Preparar FormData para Cloudinary
   const data = new FormData();
   data.append("file", file);
@@ -35,23 +33,18 @@ export const uploadImageCloudinary = async (file: File): Promise<{ success: bool
   data.append("cloud_name", CLOUD_NAME);
 
   try {
-    console.log("🌐 Enviando imagen a Cloudinary API...");
-    
     const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
       method: "POST",
       body: data,
     });
 
     const result = await response.json();
-    console.log("📋 Respuesta de Cloudinary:", result);
 
     // Verificar que Cloudinary retornó una URL válida
     if (!result.secure_url) {
       console.error("❌ Error al subir la imagen:", result);
       return { success: false, error: "No se obtuvo una URL válida desde Cloudinary." };
     }
-
-    console.log("✅ Imagen subida exitosamente. URL:", result.secure_url);
     
     // Retornar la URL que se usará en el PUT del perfil
     return { success: true, url: result.secure_url };

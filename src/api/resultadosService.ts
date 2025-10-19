@@ -56,16 +56,7 @@ export const resultadosService = {
     return response.data.data as Resultado;
   },
 
-  // Obtener estadísticas de resultados (solo admin)
-  obtenerEstadisticas: async (): Promise<{
-    totalResultados: number;
-    publicados: number;
-    pendientes: number;
-    visualizaciones: number;
-  }> => {
-    const response = await api.get('/resultados/estadisticas');
-    return response.data.data;
-  },
+
 
   // Notificar participantes sobre resultado (solo admin)
   notificarParticipantes: async (id: number): Promise<void> => {

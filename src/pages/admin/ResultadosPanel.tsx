@@ -20,13 +20,15 @@ const ResultadosPanel: React.FC = () => {
   const cargarDatos = async () => {
     try {
       setLoading(true);
-      const [resultadosData, estadisticasData] = await Promise.all([
-        resultadosService.obtenerResultados(),
-        resultadosService.obtenerEstadisticas()
-      ]);
+      const resultadosData = await resultadosService.obtenerResultados();
       
       setResultados(resultadosData.resultados);
-      setEstadisticas(estadisticasData);
+      setEstadisticas({
+        totalResultados: 0,
+        publicados: 0,
+        pendientes: 0,
+        visualizaciones: 0
+      });
     } catch (err) {
       setError('Error al cargar los datos de resultados');
       console.error('Error:', err);

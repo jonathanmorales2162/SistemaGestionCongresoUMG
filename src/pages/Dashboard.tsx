@@ -1,23 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
-import { resultadosService } from '../api/resultadosService';
-import { competenciasService } from '../api/competenciasService';
 import UsuariosGrid from '../components/UsuariosGrid';
+import TalleresGrid from '../components/TalleresGrid';
+import CompetenciasGrid from '../components/CompetenciasGrid';
+import ForosGrid from '../components/ForosGrid';
+import CategoriasGrid from '../components/CategoriasGrid';
+import ResultadosGrid from '../components/ResultadosGrid';
+import InscripcionesGrid from '../components/InscripcionesGrid';
+import AsistenciaGrid from '../components/AsistenciaGrid';
+import DiplomasGrid from '../components/DiplomasGrid';
 
 const Dashboard: React.FC = () => {
   const { usuario } = useAuth();
   const [selectedService, setSelectedService] = useState<string>('usuarios');
-  const [stats, setStats] = useState({
-    totalResultados: 0,
-    publicados: 0,
-    pendientes: 0,
-    visualizaciones: 0,
-    totalUsuarios: 0,
-    totalCompetencias: 0
-  });
-  const [loading, setLoading] = useState(true);
 
   const getRoleName = (idRol: number): string => {
     switch (idRol) {
@@ -32,41 +29,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const loadStats = async () => {
-    try {
-      setLoading(true);
-      const [resultadosStats, competencias] = await Promise.all([
-        resultadosService.obtenerEstadisticas(),
-        competenciasService.obtenerCompetencias()
-      ]);
 
-      setStats({
-        totalResultados: resultadosStats.totalResultados,
-        publicados: resultadosStats.publicados,
-        pendientes: resultadosStats.pendientes,
-        visualizaciones: resultadosStats.visualizaciones,
-        totalUsuarios: 0, // No disponible por ahora
-        totalCompetencias: competencias.competencias.length
-      });
-    } catch (error) {
-      console.error('Error al cargar estadísticas:', error);
-      // Valores por defecto en caso de error
-      setStats({
-        totalResultados: 0,
-        publicados: 0,
-        pendientes: 0,
-        visualizaciones: 0,
-        totalUsuarios: 0,
-        totalCompetencias: 0
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadStats();
-  }, []);
 
   const adminServices = [
     {
@@ -131,55 +94,65 @@ const Dashboard: React.FC = () => {
       icon: '🎖️',
       description: 'Gestión de diplomas',
       route: '/admin/diplomas'
-    },
-    {
-      id: 'roles',
-      name: 'Roles',
-      icon: '🔐',
-      description: 'Administración de roles',
-      route: '/admin/roles'
     }
   ];
 
   const renderMainContent = () => {
     const currentService = adminServices.find(s => s.id === selectedService);
     
-    // Renderizar contenido específico para usuarios
-    if (selectedService === 'usuarios') {
-      return <UsuariosGrid />;
-    }
-    
-    // Para otros servicios, mostrar el contenido por defecto
-    return (
-      <div className="service-content">
-        <div className="service-header">
-          <div className="service-title">
-            <span className="service-icon-large">{currentService?.icon}</span>
-            <div>
-              <h2>{currentService?.name}</h2>
-              <p>{currentService?.description}</p>
+    // Renderizar componentes específicos según el servicio seleccionado
+    switch (selectedService) {
+      case 'usuarios':
+        return <UsuariosGrid />;
+      case 'talleres':
+        return <TalleresGrid />;
+      case 'competencias':
+        return <CompetenciasGrid />;
+      case 'foros':
+        return <ForosGrid />;
+      case 'categorias':
+        return <CategoriasGrid />;
+      case 'resultados':
+        return <ResultadosGrid />;
+      case 'inscripciones':
+        return <InscripcionesGrid />;
+      case 'asistencia':
+        return <AsistenciaGrid />;
+      case 'diplomas':
+        return <DiplomasGrid />;
+      default:
+        // Para servicios no implementados, mostrar el contenido por defecto
+        return (
+          <div className="service-content">
+            <div className="service-header">
+              <div className="service-title">
+                <span className="service-icon-large">{currentService?.icon}</span>
+                <div>
+                  <h2>{currentService?.name}</h2>
+                  <p>{currentService?.description}</p>
+                </div>
+              </div>
+              <Link 
+                to={currentService?.route || '#'} 
+                className="btn-primary"
+              >
+                Ir a {currentService?.name}
+              </Link>
+            </div>
+            <div className="service-placeholder">
+              <p>Contenido del servicio {currentService?.name} se cargará aquí</p>
+              <p>Funcionalidades disponibles:</p>
+              <ul>
+                <li>Crear nuevo registro</li>
+                <li>Listar registros existentes</li>
+                <li>Editar registros</li>
+                <li>Eliminar registros</li>
+                <li>Buscar y filtrar</li>
+              </ul>
             </div>
           </div>
-          <Link 
-            to={currentService?.route || '#'} 
-            className="btn-primary"
-          >
-            Ir a {currentService?.name}
-          </Link>
-        </div>
-        <div className="service-placeholder">
-          <p>Contenido del servicio {currentService?.name} se cargará aquí</p>
-          <p>Funcionalidades disponibles:</p>
-          <ul>
-            <li>Crear nuevo registro</li>
-            <li>Listar registros existentes</li>
-            <li>Editar registros</li>
-            <li>Eliminar registros</li>
-            <li>Buscar y filtrar</li>
-          </ul>
-        </div>
-      </div>
-    );
+        );
+    }
   };
 
   return (
