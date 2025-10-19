@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { resultadosService } from '../../api';
-import { useAuth } from '../../context/AuthContext';
 import type { Resultado } from '../../types/Resultado';
 
 const ResultadosPanel: React.FC = () => {
@@ -13,7 +12,6 @@ const ResultadosPanel: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { usuario } = useAuth();
 
   useEffect(() => {
     cargarDatos();

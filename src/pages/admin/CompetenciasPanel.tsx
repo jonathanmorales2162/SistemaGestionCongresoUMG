@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { competenciasService } from '../../api';
 import type { Competencia } from '../../types';
 import { usePermisos } from '../../hooks/usePermisos';
@@ -10,7 +9,6 @@ const CompetenciasPanel: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [competenciaEditando, setCompetenciaEditando] = useState<Competencia | null>(null);
-  const { usuario } = useAuth();
   const { esAdmin, esOrganizador } = usePermisos();
 
   const [formularioData, setFormularioData] = useState({

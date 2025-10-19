@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import { talleresService, categoriasService } from '../../api';
-import type { Taller, Categoria } from '../../types';
+import { talleresService } from '../../api';
+import type { Taller } from '../../types';
 import { usePermisos } from '../../hooks/usePermisos';
 
 const TalleresPanel: React.FC = () => {
@@ -10,7 +9,6 @@ const TalleresPanel: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [tallerEditando, setTallerEditando] = useState<Taller | null>(null);
-  const { usuario } = useAuth();
   const { esAdmin, esOrganizador } = usePermisos();
 
   const [formularioData, setFormularioData] = useState({

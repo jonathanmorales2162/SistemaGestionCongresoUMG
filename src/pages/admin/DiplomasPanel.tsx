@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { diplomasService } from '../../api';
-import { useAuth } from '../../context/AuthContext';
 
 const DiplomasPanel: React.FC = () => {
   const [estadisticas, setEstadisticas] = useState({
@@ -11,7 +10,6 @@ const DiplomasPanel: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { usuario } = useAuth();
 
   useEffect(() => {
     cargarEstadisticas();

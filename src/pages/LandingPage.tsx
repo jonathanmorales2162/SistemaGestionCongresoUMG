@@ -12,7 +12,7 @@ import type { Taller } from '../types/Taller';
 import type { Usuario } from '../types/Usuario';
 
 const LandingPage: React.FC = () => {
-  const { isAuthenticated, usuario } = useAuth();
+  const { isAuthenticated } = useAuth();
   
   // Estados para los datos de la API
   const [foros, setForos] = useState<Foro[]>([]);

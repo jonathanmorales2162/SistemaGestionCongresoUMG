@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { forosService } from '../../api';
 import type { Foro } from '../../types';
 import { usePermisos } from '../../hooks/usePermisos';
@@ -10,7 +9,6 @@ const ForosPanel: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [foroEditando, setForoEditando] = useState<Foro | null>(null);
-  const { usuario } = useAuth();
   const { esAdmin, esOrganizador } = usePermisos();
 
   const [formularioData, setFormularioData] = useState({
@@ -105,14 +103,7 @@ const ForosPanel: React.FC = () => {
     }
   };
 
-  const cancelarFormulario = () => {
-    setFormularioData({
-      titulo: '',
-      descripcion: ''
-    });
-    setForoEditando(null);
-    setMostrarFormulario(false);
-  };
+
 
   const puedeGestionar = esAdmin() || esOrganizador();
 
