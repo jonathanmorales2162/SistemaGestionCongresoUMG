@@ -1,203 +1,375 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
-import Sidebar from '../components/Sidebar';
+import { resultadosService } from '../api/resultadosService';
+import { competenciasService } from '../api/competenciasService';
 
 const Dashboard: React.FC = () => {
   const { usuario } = useAuth();
+  const [selectedService, setSelectedService] = useState<string>('overview');
+  const [stats, setStats] = useState({
+    totalResultados: 0,
+    publicados: 0,
+    pendientes: 0,
+    visualizaciones: 0,
+    totalUsuarios: 0,
+    totalCompetencias: 0
+  });
+  const [loading, setLoading] = useState(true);
 
-  const quickActions = [
+  const getRoleName = (idRol: number): string => {
+    switch (idRol) {
+      case 1:
+        return 'Administrador';
+      case 2:
+        return 'Organizador';
+      case 3:
+        return 'Participante';
+      default:
+        return 'Usuario';
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      setLoading(true);
+      const [resultadosStats, competencias] = await Promise.all([
+        resultadosService.obtenerEstadisticas(),
+        competenciasService.obtenerCompetencias()
+      ]);
+
+      setStats({
+        totalResultados: resultadosStats.totalResultados,
+        publicados: resultadosStats.publicados,
+        pendientes: resultadosStats.pendientes,
+        visualizaciones: resultadosStats.visualizaciones,
+        totalUsuarios: 0, // No disponible por ahora
+        totalCompetencias: competencias.competencias.length
+      });
+    } catch (error) {
+      console.error('Error al cargar estadísticas:', error);
+      // Valores por defecto en caso de error
+      setStats({
+        totalResultados: 0,
+        publicados: 0,
+        pendientes: 0,
+        visualizaciones: 0,
+        totalUsuarios: 0,
+        totalCompetencias: 0
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const adminServices = [
     {
-      title: 'Foros de Conferencias',
-      description: 'Explora y participa en los foros de discusión',
-      icon: '💬',
-      link: '/foros',
-      color: 'primary'
+      id: 'usuarios',
+      name: 'Usuarios',
+      icon: '👥',
+      description: 'Gestión de usuarios del sistema',
+      route: '/admin/usuarios'
     },
     {
-      title: 'Mi Perfil',
-      description: 'Actualiza tu información personal',
-      icon: '👤',
-      link: '/profile',
-      color: 'secondary'
+      id: 'talleres',
+      name: 'Talleres',
+      icon: '🎓',
+      description: 'Administración de talleres',
+      route: '/admin/talleres'
     },
     {
-      title: 'Certificados',
-      description: 'Descarga tus certificados de participación',
+      id: 'competencias',
+      name: 'Competencias',
       icon: '🏆',
-      link: '/certificates',
-      color: 'accent'
+      description: 'Gestión de competencias',
+      route: '/admin/competencias'
     },
     {
-      title: 'Agenda',
-      description: 'Revisa el cronograma de eventos',
-      icon: '📅',
-      link: '/agenda',
-      color: 'info'
+      id: 'foros',
+      name: 'Foros',
+      icon: '💬',
+      description: 'Administración de foros',
+      route: '/admin/foros'
+    },
+    {
+      id: 'categorias',
+      name: 'Categorías',
+      icon: '📂',
+      description: 'Gestión de categorías',
+      route: '/admin/categorias'
+    },
+    {
+      id: 'resultados',
+      name: 'Resultados',
+      icon: '📊',
+      description: 'Administración de resultados',
+      route: '/admin/resultados'
+    },
+    {
+      id: 'inscripciones',
+      name: 'Inscripciones',
+      icon: '📝',
+      description: 'Gestión de inscripciones',
+      route: '/admin/inscripciones'
+    },
+    {
+      id: 'asistencia',
+      name: 'Asistencia',
+      icon: '✅',
+      description: 'Control de asistencia',
+      route: '/admin/asistencia'
+    },
+    {
+      id: 'diplomas',
+      name: 'Diplomas',
+      icon: '🎖️',
+      description: 'Gestión de diplomas',
+      route: '/admin/diplomas'
+    },
+    {
+      id: 'roles',
+      name: 'Roles',
+      icon: '🔐',
+      description: 'Administración de roles',
+      route: '/admin/roles'
     }
   ];
 
-  const recentActivities = [
-    {
-      type: 'login',
-      message: 'Iniciaste sesión en el sistema',
-      time: 'Hace 5 minutos',
-      icon: '🔐'
-    },
-    {
-      type: 'registration',
-      message: 'Te registraste en el congreso',
-      time: 'Hace 2 horas',
-      icon: '✅'
-    },
-    {
-      type: 'update',
-      message: 'Actualizaste tu perfil',
-      time: 'Ayer',
-      icon: '📝'
-    }
-  ];
+  const renderMainContent = () => {
+    if (selectedService === 'overview') {
+      return (
+        <div className="admin-overview">
+          <div className="overview-header">
+            <h1>Panel de Control</h1>
+            <p>Centro de Ayuda</p>
+          </div>
+          
+          {/* Estadísticas principales */}
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="stat-header">
+                <h3>Resultados</h3>
+                <span className="stat-period">Ver todo</span>
+              </div>
+              <div className="stat-content">
+                <div className="stat-number">{loading ? '...' : stats.totalResultados}</div>
+                <div className="stat-details">
+                  <div className="stat-item">
+                    <span className="stat-label">Publicados</span>
+                    <span className="stat-value">{loading ? '...' : stats.publicados}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Pendientes</span>
+                    <span className="stat-value">{loading ? '...' : stats.pendientes}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-  const upcomingEvents = [
-    {
-      title: 'Conferencia: IA en el Futuro',
-      speaker: 'Dr. María González',
-      time: '10:00 AM - 11:30 AM',
-      date: 'Mañana',
-      room: 'Auditorio Principal'
-    },
-    {
-      title: 'Taller: Desarrollo con React',
-      speaker: 'Ing. Carlos Pérez',
-      time: '2:00 PM - 4:00 PM',
-      date: 'Mañana',
-      room: 'Lab 1'
-    },
-    {
-      title: 'Panel: Blockchain y Criptomonedas',
-      speaker: 'Varios expertos',
-      time: '9:00 AM - 10:30 AM',
-      date: 'Pasado mañana',
-      room: 'Sala de Conferencias'
+            <div className="stat-card">
+              <div className="stat-header">
+                <h3>Uso de Recursos</h3>
+                <span className="stat-period">27 ene - 3 feb</span>
+              </div>
+              <div className="stat-content">
+                <div className="stat-chart">
+                  <div className="chart-circle">
+                    <div className="chart-percentage">
+                      {loading ? '...' : Math.round((stats.publicados / Math.max(stats.totalResultados, 1)) * 100)}%
+                    </div>
+                  </div>
+                  <div className="chart-details">
+                    <div className="chart-item">
+                      <span className="chart-color blue"></span>
+                      <span>Publicados: {loading ? '...' : stats.publicados}</span>
+                    </div>
+                    <div className="chart-item">
+                      <span className="chart-color purple"></span>
+                      <span>Pendientes: {loading ? '...' : stats.pendientes}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-header">
+                <h3>Competencias</h3>
+                <span className="stat-period">Total registradas</span>
+              </div>
+              <div className="stat-content">
+                <div className="stat-number">{loading ? '...' : stats.totalCompetencias}</div>
+                <div className="stat-details">
+                  <div className="stat-item">
+                    <span className="stat-label">Activas</span>
+                    <span className="stat-value">{loading ? '...' : stats.totalCompetencias}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Participantes</span>
+                    <span className="stat-value">{loading ? '...' : stats.visualizaciones}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Resumen de actividades */}
+          <div className="charts-grid">
+            <div className="chart-card">
+              <div className="chart-header">
+                <h3>Actividades del Congreso</h3>
+                <span className="chart-period">Resumen general</span>
+              </div>
+              <div className="activity-summary">
+                <div className="activity-item">
+                  <span className="activity-icon">💬</span>
+                  <div className="activity-info">
+                    <span className="activity-label">Foros</span>
+                    <span className="activity-count">Disponibles</span>
+                  </div>
+                </div>
+                <div className="activity-item">
+                  <span className="activity-icon">🏆</span>
+                  <div className="activity-info">
+                    <span className="activity-label">Competencias</span>
+                    <span className="activity-count">{loading ? '...' : stats.totalCompetencias}</span>
+                  </div>
+                </div>
+                <div className="activity-item">
+                  <span className="activity-icon">🎓</span>
+                  <div className="activity-info">
+                    <span className="activity-label">Talleres</span>
+                    <span className="activity-count">Disponibles</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="chart-card">
+              <div className="chart-header">
+                <h3>Estado de Resultados</h3>
+                <span className="chart-period">Publicación</span>
+              </div>
+              <div className="chart-value">{loading ? '...' : stats.totalResultados} Total</div>
+              <div className="progress-bar">
+                <div 
+                  className="progress-fill" 
+                  style={{ 
+                    width: `${stats.totalResultados > 0 ? (stats.publicados / stats.totalResultados) * 100 : 0}%` 
+                  }}
+                ></div>
+              </div>
+              <div className="progress-label">
+                {loading ? '...' : Math.round((stats.publicados / Math.max(stats.totalResultados, 1)) * 100)}% Publicados
+              </div>
+            </div>
+          </div>
+
+          {/* Servicios administrativos */}
+          <div className="services-section">
+            <h2>Servicios Administrativos</h2>
+            <div className="services-grid">
+              {adminServices.map((service) => (
+                <div key={service.id} className="service-card">
+                  <div className="service-icon">{service.icon}</div>
+                  <div className="service-content">
+                    <h3 className="service-title">{service.name}</h3>
+                    <p>{service.description}</p>
+                    <Link to={service.route} className="btn btn-primary">
+                      Administrar
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
     }
-  ];
+
+    const currentService = adminServices.find(s => s.id === selectedService);
+    return (
+      <div className="service-content">
+        <div className="service-header">
+          <div className="service-title">
+            <span className="service-icon-large">{currentService?.icon}</span>
+            <div>
+              <h2>{currentService?.name}</h2>
+              <p>{currentService?.description}</p>
+            </div>
+          </div>
+          <Link 
+            to={currentService?.route || '#'} 
+            className="btn-primary"
+          >
+            Ir a {currentService?.name}
+          </Link>
+        </div>
+        <div className="service-placeholder">
+          <p>Contenido del servicio {currentService?.name} se cargará aquí</p>
+          <p>Funcionalidades disponibles:</p>
+          <ul>
+            <li>Crear nuevo registro</li>
+            <li>Listar registros existentes</li>
+            <li>Editar registros</li>
+            <li>Eliminar registros</li>
+            <li>Buscar y filtrar</li>
+          </ul>
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <div className="dashboard-layout">
+    <div className="admin-dashboard">
       <Navbar />
-      <div className="dashboard-content">
-        <Sidebar />
-        <main className="main-content">
-          {/* Header */}
-          <div className="dashboard-header">
+      <div className="admin-layout">
+        {/* Sidebar */}
+        <aside className="admin-sidebar">
+          <div className="sidebar-header">
+            <h3>Administración</h3>
+            <p className="user-role">{getRoleName(usuario?.id_rol || 4)}</p>
+          </div>
+          
+          <nav className="sidebar-nav">
+            <button
+              className={`nav-item ${selectedService === 'overview' ? 'active' : ''}`}
+              onClick={() => setSelectedService('overview')}
+            >
+              <span className="nav-icon">📊</span>
+              <span className="nav-label">Resumen</span>
+            </button>
+            
+            {adminServices.map((service) => (
+              <button
+                key={service.id}
+                className={`nav-item ${selectedService === service.id ? 'active' : ''}`}
+                onClick={() => setSelectedService(service.id)}
+              >
+                <span className="nav-icon">{service.icon}</span>
+                <span className="nav-label">{service.name}</span>
+              </button>
+            ))}
+          </nav>
+        </aside>
+
+        {/* Main Content */}
+        <main className="admin-main">
+          <div className="admin-header">
             <div className="welcome-section">
               <h1>¡Bienvenido, {usuario?.nombre}!</h1>
               <p className="user-info">
-                {usuario?.id_rol} • {usuario?.colegio || 'Sin colegio'}
+                {usuario ? getRoleName(usuario.id_rol) : 'Usuario'} • {usuario?.colegio || 'Sin colegio'}
               </p>
             </div>
-            <div className="user-stats">
-              <div className="stat-card">
-                <div className="stat-value">5</div>
-                <div className="stat-label">Eventos</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-value">3</div>
-                <div className="stat-label">Certificados</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-value">12</div>
-                <div className="stat-label">Conexiones</div>
-              </div>
-            </div>
           </div>
-
-          {/* Quick Actions */}
-          <section className="dashboard-section">
-            <h2 className="section-title">Acciones Rápidas</h2>
-            <div className="quick-actions-grid">
-              {quickActions.map((action, index) => (
-                <Link 
-                  key={index} 
-                  to={action.link} 
-                  className={`quick-action-card ${action.color}`}
-                >
-                  <div className="action-icon">{action.icon}</div>
-                  <div className="action-content">
-                    <h3>{action.title}</h3>
-                    <p>{action.description}</p>
-                  </div>
-                  <div className="action-arrow">→</div>
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          {/* Dashboard Grid */}
-          <div className="dashboard-grid">
-            {/* Upcoming Events */}
-            <section className="dashboard-card">
-              <div className="card-header">
-                <h3>Próximos Eventos</h3>
-                <Link to="/agenda" className="view-all-link">Ver todos</Link>
-              </div>
-              <div className="events-list">
-                {upcomingEvents.map((event, index) => (
-                  <div key={index} className="event-item">
-                    <div className="event-time">
-                      <div className="event-date">{event.date}</div>
-                      <div className="event-hour">{event.time}</div>
-                    </div>
-                    <div className="event-details">
-                      <h4>{event.title}</h4>
-                      <p className="event-speaker">Por: {event.speaker}</p>
-                      <p className="event-location">📍 {event.room}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Recent Activities */}
-            <section className="dashboard-card">
-              <div className="card-header">
-                <h3>Actividad Reciente</h3>
-              </div>
-              <div className="activities-list">
-                {recentActivities.map((activity, index) => (
-                  <div key={index} className="activity-item">
-                    <div className="activity-icon">{activity.icon}</div>
-                    <div className="activity-content">
-                      <p>{activity.message}</p>
-                      <span className="activity-time">{activity.time}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </div>
-
-          {/* Notifications */}
-          <section className="dashboard-section">
-            <h2 className="section-title">Notificaciones</h2>
-            <div className="notifications-container">
-              <div className="notification-item info">
-                <div className="notification-icon">ℹ️</div>
-                <div className="notification-content">
-                  <h4>Recordatorio</h4>
-                  <p>No olvides confirmar tu asistencia a las conferencias de mañana.</p>
-                </div>
-              </div>
-              <div className="notification-item success">
-                <div className="notification-icon">✅</div>
-                <div className="notification-content">
-                  <h4>Registro Exitoso</h4>
-                  <p>Te has registrado exitosamente en el taller de React.</p>
-                </div>
-              </div>
-            </div>
-          </section>
+          
+          {renderMainContent()}
         </main>
       </div>
     </div>

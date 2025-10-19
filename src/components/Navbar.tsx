@@ -18,6 +18,20 @@ const Navbar: React.FC = () => {
     }
   };
 
+  const handleBrandClick = () => {
+    if (usuario) {
+      // Si el usuario está logueado, alternar entre dashboard y landing
+      if (location.pathname === '/dashboard') {
+        navigate('/');
+      } else {
+        navigate('/dashboard');
+      }
+    } else {
+      // Si no está logueado, ir a la landing page
+      navigate('/');
+    }
+  };
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -35,10 +49,10 @@ const Navbar: React.FC = () => {
       <div className="navbar-container">
         {/* Logo y título */}
         <div className="navbar-brand">
-          <Link to={usuario ? "/dashboard" : "/"} className="brand-link">
+          <button onClick={handleBrandClick} className="brand-link">
             <div className="brand-icon">🎓</div>
             <span className="brand-text">Congreso UMG</span>
-          </Link>
+          </button>
         </div>
 
         {/* Navegación principal - Desktop */}
@@ -119,7 +133,7 @@ const Navbar: React.FC = () => {
                     </div>
                   </div>
                   <div className="dropdown-divider"></div>
-                  <Link to="/profile" className="dropdown-item">
+                  <Link to="/perfil" className="dropdown-item">
                     👤 Mi Perfil
                   </Link>
                   <Link to="/settings" className="dropdown-item">

@@ -22,6 +22,22 @@
   --accent-200: #bae6fd;
   --accent-100: #e0f2fe;
 
+  /* Colores grises para fondos claros */
+  --gray-900: #111827;
+  --gray-800: #1f2937;
+  --gray-700: #374151;
+  --gray-600: #4b5563;
+  --gray-500: #6b7280;
+  --gray-400: #9ca3af;
+  --gray-300: #d1d5db;
+  --gray-200: #e5e7eb;
+  --gray-100: #f3f4f6;
+  --gray-50: #f9fafb;
+
+  /* Variables RGB para efectos de transparencia */
+  --accent-500-rgb: 14, 165, 233;
+  --primary-500-rgb: 100, 116, 139;
+
   /* Estados */
   --success: #10b981;
   --warning: #f59e0b;
@@ -35,11 +51,22 @@
   --bg-card: var(--primary-800);
   --bg-overlay: rgba(15, 23, 42, 0.8);
 
+  /* Superficies claras */
+  --surface-50: var(--gray-50);
+  --surface-100: var(--gray-100);
+  --surface-200: var(--gray-200);
+  --surface-300: var(--gray-300);
+
   /* Texto */
   --text-primary: var(--primary-100);
   --text-secondary: var(--primary-300);
   --text-muted: var(--primary-400);
   --text-accent: var(--accent-400);
+
+  /* Texto para fondos claros */
+  --text-dark-primary: var(--gray-900);
+  --text-dark-secondary: var(--gray-700);
+  --text-dark-muted: var(--gray-500);
 
   /* Bordes */
   --border-primary: var(--primary-600);

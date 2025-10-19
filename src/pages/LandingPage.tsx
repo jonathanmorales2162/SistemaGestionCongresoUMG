@@ -1,39 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Navbar from '../components/Navbar';
+import { forosService } from '../api/forosService';
+import { competenciasService } from '../api/competenciasService';
+import { talleresService } from '../api/talleresService';
+import { usuariosService } from '../api/usuariosService';
+import type { Foro } from '../types/Foro';
+import type { Competencia } from '../types/Competencia';
+import type { Taller } from '../types/Taller';
+import type { Usuario } from '../types/Usuario';
 
 const LandingPage: React.FC = () => {
   const { isAuthenticated, usuario } = useAuth();
+  
+  // Estados para los datos de la API
+  const [foros, setForos] = useState<Foro[]>([]);
+  const [competencias, setCompetencias] = useState<Competencia[]>([]);
+  const [talleres, setTalleres] = useState<Taller[]>([]);
+  const [ponentes, setPonentes] = useState<Usuario[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Función para cargar datos de la API
+  useEffect(() => {
+    const cargarDatos = async () => {
+      try {
+        setLoading(true);
+        
+        // Cargar datos en paralelo
+        const [forosData, competenciasData, talleresData, ponentesData] = await Promise.all([
+          forosService.obtenerForos(1, 6), // Obtener 6 foros
+          competenciasService.obtenerCompetencias(1, 6), // Obtener 6 competencias
+          talleresService.obtenerTalleres(1, 6), // Obtener 6 talleres
+          usuariosService.obtenerUsuariosPorRol('staff', 4) // Obtener 4 usuarios staff
+        ]);
+
+        setForos(forosData.foros);
+        setCompetencias(competenciasData.competencias);
+        setTalleres(talleresData.talleres);
+        setPonentes(ponentesData);
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarDatos();
+  }, []);
 
   return (
     <div className="landing-page">
       {/* Header */}
-      <header className="landing-header">
-        <nav className="landing-nav">
-          <div className="nav-brand">
-            <h2>Congreso Tecnológico UMG</h2>
-          </div>
-          <div className="nav-links">
-            {isAuthenticated ? (
-              <>
-                <span className="welcome-text">Bienvenido, {usuario?.nombre}</span>
-                <Link to="/dashboard" className="nav-button primary">
-                  Dashboard
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className="nav-button secondary">
-                  Iniciar Sesión
-                </Link>
-                <Link to="/register" className="nav-button primary">
-                  Registrarse
-                </Link>
-              </>
-            )}
-          </div>
-        </nav>
-      </header>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="hero-section">
@@ -83,24 +102,7 @@ const LandingPage: React.FC = () => {
                 <span className="stat-label">Asistentes</span>
               </div>
             </div>
-            <div className="hero-buttons">
-              {!isAuthenticated ? (
-                <>
-                  <Link to="/register" className="cta-button primary">
-                    <span>Registrarse Ahora</span>
-                    <div className="button-glow"></div>
-                  </Link>
-                  <Link to="/login" className="cta-button secondary">
-                    Ya tengo cuenta
-                  </Link>
-                </>
-              ) : (
-                <Link to="/dashboard" className="cta-button primary">
-                  <span>Ir al Dashboard</span>
-                  <div className="button-glow"></div>
-                </Link>
-              )}
-            </div>
+
           </div>
           <div className="hero-visual">
             <div className="tech-grid">
@@ -126,6 +128,312 @@ const LandingPage: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+
+
+      {/* Foros Section */}
+      <section className="schedule-section">
+        <div className="container">
+          <div className="section-header">
+            <h2 className="section-title">Foros de Discusión</h2>
+            <p className="section-subtitle">
+              Participa en debates y discusiones sobre los temas más relevantes
+            </p>
+          </div>
+          {loading ? (
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+              <p>Cargando foros...</p>
+            </div>
+          ) : (
+            <div className="schedule-timeline">
+              {foros.length > 0 ? (
+                foros.map((foro) => (
+                  <div key={foro.id_foro} className="timeline-day">
+                    <div className="day-header">
+                      <h3>{foro.titulo}</h3>
+                      <span className="day-date">
+                        {new Date(foro.fecha_creacion).toLocaleDateString('es-ES', {
+                          day: 'numeric',
+                          month: 'long'
+                        })}
+                      </span>
+                    </div>
+                    <div className="day-events">
+                      <div className="event-item">
+                        <span className="event-time">
+                          General
+                        </span>
+                        <div className="event-content">
+                          <h4>{foro.titulo}</h4>
+                          <p>{foro.descripcion}</p>
+                          <div className="foro-meta">
+                            <span>👤 {foro.usuario_creador?.nombre} {foro.usuario_creador?.apellido}</span>
+                            <span>💬 {foro.total_mensajes || 0} mensajes</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="no-content">
+                  <p>No hay foros disponibles en este momento.</p>
+                </div>
+              )}
+            </div>
+          )}
+          <div className="section-footer">
+            <Link to="/foros" className="cta-button secondary">
+              Ver Todos los Foros
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Competencias Section */}
+      <section className="schedule-section">
+        <div className="container">
+          <div className="section-header">
+            <h2 className="section-title">Competencias Tecnológicas</h2>
+            <p className="section-subtitle">
+              Demuestra tus habilidades en emocionantes competencias
+            </p>
+          </div>
+          {loading ? (
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+              <p>Cargando competencias...</p>
+            </div>
+          ) : (
+            <div className="schedule-timeline">
+              {competencias.length > 0 ? (
+                competencias.map((competencia) => (
+                  <div key={competencia.id_competencia} className="timeline-day">
+                    <div className="day-header">
+                      <h3>{competencia.titulo}</h3>
+                      <span className="day-date">
+                        {new Date(competencia.horario).toLocaleDateString('es-ES', {
+                          day: 'numeric',
+                          month: 'long'
+                        })}
+                      </span>
+                    </div>
+                    <div className="day-events">
+                      <div className="event-item">
+                        <span className="event-time">
+                          {new Date(competencia.horario).toLocaleTimeString('es-ES', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </span>
+                        <div className="event-content">
+                          <h4>{competencia.titulo}</h4>
+                          <p>{competencia.descripcion}</p>
+                          <div className="competencia-meta">
+                            <span>🏆 {competencia.categoria?.nombre || 'General'}</span>
+                            <span>👥 {competencia.cupo} cupos</span>
+                            <span>📊 {competencia.inscritos || 0} inscritos</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="no-content">
+                  <p>No hay competencias disponibles en este momento.</p>
+                </div>
+              )}
+            </div>
+          )}
+          <div className="section-footer">
+            <Link to="/competencias" className="cta-button secondary">
+              Ver Todas las Competencias
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Talleres Section */}
+      <section className="schedule-section">
+        <div className="container">
+          <div className="section-header">
+            <h2 className="section-title">Talleres Prácticos</h2>
+            <p className="section-subtitle">
+              Aprende nuevas tecnologías con talleres hands-on
+            </p>
+          </div>
+          {loading ? (
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+              <p>Cargando talleres...</p>
+            </div>
+          ) : (
+            <div className="schedule-timeline">
+              {talleres.length > 0 ? (
+                talleres.map((taller) => (
+                  <div key={taller.id_taller} className="timeline-day">
+                    <div className="day-header">
+                      <h3>{taller.titulo}</h3>
+                      <span className="day-date">
+                        {new Date(taller.horario).toLocaleDateString('es-ES', {
+                          day: 'numeric',
+                          month: 'long'
+                        })}
+                      </span>
+                    </div>
+                    <div className="day-events">
+                      <div className="event-item">
+                        <span className="event-time">
+                          {new Date(taller.horario).toLocaleTimeString('es-ES', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </span>
+                        <div className="event-content">
+                          <h4>{taller.titulo}</h4>
+                          <p>{taller.descripcion}</p>
+                          <div className="taller-meta">
+                            <span>📚 {taller.categoria?.nombre || 'General'}</span>
+                            <span>👥 {taller.cupo} cupos</span>
+                            <span>📊 {taller.inscritos || 0} inscritos</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="no-content">
+                  <p>No hay talleres disponibles en este momento.</p>
+                </div>
+              )}
+            </div>
+          )}
+          <div className="section-footer">
+            <Link to="/talleres" className="cta-button secondary">
+              Ver Todos los Talleres
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Speakers Section */}
+      <section className="speakers-section">
+        <div className="container">
+          <div className="section-header">
+            <h2 className="section-title">Ponentes Destacados</h2>
+            <p className="section-subtitle">
+              Conoce a los expertos que compartirán su conocimiento
+            </p>
+          </div>
+          {loading ? (
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+              <p>Cargando ponentes...</p>
+            </div>
+          ) : (
+            <div className="speakers-grid">
+              {ponentes.length > 0 ? (
+                ponentes.map((ponente) => (
+                  <div key={ponente.id_usuario} className="speaker-card">
+                    <div className="speaker-image">
+                      <div className="avatar">
+                        {ponente.foto_perfil ? (
+                          <img 
+                            src={ponente.foto_perfil} 
+                            alt={`${ponente.nombre} ${ponente.apellido}`}
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <span>👨‍💼</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="speaker-info">
+                      <h3>{ponente.nombre} {ponente.apellido}</h3>
+                      <p className="speaker-title">
+                        {ponente.especialidad || 'Especialista en Tecnología'}
+                      </p>
+                      <p className="speaker-company">
+                        {ponente.institucion || 'Universidad Mariano Gálvez'}
+                      </p>
+                      <div className="speaker-contact">
+                        <span>📧 {ponente.correo}</span>
+                        {ponente.telefono && (
+                          <span>📱 {ponente.telefono}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="speakers-grid">
+                  <div className="speaker-card">
+                    <div className="speaker-image">
+                      <div className="avatar">👩‍💼</div>
+                    </div>
+                    <div className="speaker-info">
+                      <h3>Dra. María González</h3>
+                      <p className="speaker-title">Experta en Inteligencia Artificial</p>
+                      <p className="speaker-company">MIT Technology Review</p>
+                      <div className="speaker-social">
+                        <span>🔗 LinkedIn</span>
+                        <span>🐦 Twitter</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="speaker-card">
+                    <div className="speaker-image">
+                      <div className="avatar">👨‍💻</div>
+                    </div>
+                    <div className="speaker-info">
+                      <h3>Ing. Carlos Mendoza</h3>
+                      <p className="speaker-title">Chief Information Security Officer</p>
+                      <p className="speaker-company">TechCorp Guatemala</p>
+                      <div className="speaker-social">
+                        <span>🔗 LinkedIn</span>
+                        <span>🐦 Twitter</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="speaker-card">
+                    <div className="speaker-image">
+                      <div className="avatar">👩‍🔬</div>
+                    </div>
+                    <div className="speaker-info">
+                      <h3>Dra. Ana Rodríguez</h3>
+                      <p className="speaker-title">Directora de Innovación</p>
+                      <p className="speaker-company">Google Cloud LATAM</p>
+                      <div className="speaker-social">
+                        <span>🔗 LinkedIn</span>
+                        <span>🐦 Twitter</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="speaker-card">
+                    <div className="speaker-image">
+                      <div className="avatar">👨‍🚀</div>
+                    </div>
+                    <div className="speaker-info">
+                      <h3>Ing. Roberto Silva</h3>
+                      <p className="speaker-title">Fundador & CEO</p>
+                      <p className="speaker-company">InnovaTech Startup</p>
+                      <div className="speaker-social">
+                        <span>🔗 LinkedIn</span>
+                        <span>🐦 Twitter</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
@@ -168,170 +476,6 @@ const LandingPage: React.FC = () => {
               <div className="feature-icon">🌟</div>
               <h3>Innovación</h3>
               <p>Conoce las últimas tendencias y avances tecnológicos</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Schedule Section */}
-      <section className="schedule-section">
-        <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">Cronograma del Evento</h2>
-            <p className="section-subtitle">
-              Tres días llenos de conocimiento, innovación y networking
-            </p>
-          </div>
-          <div className="schedule-timeline">
-            <div className="timeline-day">
-              <div className="day-header">
-                <h3>Día 1</h3>
-                <span className="day-date">15 de Octubre</span>
-              </div>
-              <div className="day-events">
-                <div className="event-item">
-                  <span className="event-time">09:00 - 10:00</span>
-                  <div className="event-content">
-                    <h4>Registro y Bienvenida</h4>
-                    <p>Acreditación y networking inicial</p>
-                  </div>
-                </div>
-                <div className="event-item">
-                  <span className="event-time">10:00 - 11:30</span>
-                  <div className="event-content">
-                    <h4>Conferencia Magistral: IA y el Futuro</h4>
-                    <p>Dr. María González - Experta en Inteligencia Artificial</p>
-                  </div>
-                </div>
-                <div className="event-item">
-                  <span className="event-time">14:00 - 17:00</span>
-                  <div className="event-content">
-                    <h4>Talleres Paralelos</h4>
-                    <p>Machine Learning, Blockchain, Cloud Computing</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="timeline-day">
-              <div className="day-header">
-                <h3>Día 2</h3>
-                <span className="day-date">16 de Octubre</span>
-              </div>
-              <div className="day-events">
-                <div className="event-item">
-                  <span className="event-time">09:00 - 10:30</span>
-                  <div className="event-content">
-                    <h4>Ciberseguridad en la Era Digital</h4>
-                    <p>Ing. Carlos Mendoza - CISO de TechCorp</p>
-                  </div>
-                </div>
-                <div className="event-item">
-                  <span className="event-time">11:00 - 12:30</span>
-                  <div className="event-content">
-                    <h4>Panel: Startups Tecnológicas</h4>
-                    <p>Emprendedores exitosos comparten sus experiencias</p>
-                  </div>
-                </div>
-                <div className="event-item">
-                  <span className="event-time">15:00 - 18:00</span>
-                  <div className="event-content">
-                    <h4>Hackathon Estudiantil</h4>
-                    <p>Competencia de desarrollo de soluciones innovadoras</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="timeline-day">
-              <div className="day-header">
-                <h3>Día 3</h3>
-                <span className="day-date">17 de Octubre</span>
-              </div>
-              <div className="day-events">
-                <div className="event-item">
-                  <span className="event-time">09:00 - 10:30</span>
-                  <div className="event-content">
-                    <h4>Transformación Digital</h4>
-                    <p>Casos de éxito en empresas guatemaltecas</p>
-                  </div>
-                </div>
-                <div className="event-item">
-                  <span className="event-time">11:00 - 12:00</span>
-                  <div className="event-content">
-                    <h4>Premiación y Clausura</h4>
-                    <p>Entrega de reconocimientos y certificados</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Speakers Section */}
-      <section className="speakers-section">
-        <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">Ponentes Destacados</h2>
-            <p className="section-subtitle">
-              Conoce a los expertos que compartirán su conocimiento
-            </p>
-          </div>
-          <div className="speakers-grid">
-            <div className="speaker-card">
-              <div className="speaker-image">
-                <div className="avatar">👩‍💼</div>
-              </div>
-              <div className="speaker-info">
-                <h3>Dra. María González</h3>
-                <p className="speaker-title">Experta en Inteligencia Artificial</p>
-                <p className="speaker-company">MIT Technology Review</p>
-                <div className="speaker-social">
-                  <span>🔗 LinkedIn</span>
-                  <span>🐦 Twitter</span>
-                </div>
-              </div>
-            </div>
-            <div className="speaker-card">
-              <div className="speaker-image">
-                <div className="avatar">👨‍💻</div>
-              </div>
-              <div className="speaker-info">
-                <h3>Ing. Carlos Mendoza</h3>
-                <p className="speaker-title">Chief Information Security Officer</p>
-                <p className="speaker-company">TechCorp Guatemala</p>
-                <div className="speaker-social">
-                  <span>🔗 LinkedIn</span>
-                  <span>🐦 Twitter</span>
-                </div>
-              </div>
-            </div>
-            <div className="speaker-card">
-              <div className="speaker-image">
-                <div className="avatar">👩‍🔬</div>
-              </div>
-              <div className="speaker-info">
-                <h3>Dra. Ana Rodríguez</h3>
-                <p className="speaker-title">Directora de Innovación</p>
-                <p className="speaker-company">Google Cloud LATAM</p>
-                <div className="speaker-social">
-                  <span>🔗 LinkedIn</span>
-                  <span>🐦 Twitter</span>
-                </div>
-              </div>
-            </div>
-            <div className="speaker-card">
-              <div className="speaker-image">
-                <div className="avatar">👨‍🚀</div>
-              </div>
-              <div className="speaker-info">
-                <h3>Ing. Roberto Silva</h3>
-                <p className="speaker-title">Fundador & CEO</p>
-                <p className="speaker-company">InnovaTech Startup</p>
-                <div className="speaker-social">
-                  <span>🔗 LinkedIn</span>
-                  <span>🐦 Twitter</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>

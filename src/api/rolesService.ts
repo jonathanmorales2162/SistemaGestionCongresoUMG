@@ -7,8 +7,11 @@ export const rolesService = {
     try {
       const response = await axiosInstance.get('/roles');
       return response.data.roles || response.data;
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Error al obtener roles');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message 
+        : 'Error al obtener roles';
+      throw new Error(errorMessage || 'Error al obtener roles');
     }
   },
 
@@ -17,8 +20,11 @@ export const rolesService = {
     try {
       const response = await axiosInstance.get(`/roles/${id}`);
       return response.data.rol || response.data;
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Error al obtener rol');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message 
+        : 'Error al obtener rol';
+      throw new Error(errorMessage || 'Error al obtener rol');
     }
   }
 };

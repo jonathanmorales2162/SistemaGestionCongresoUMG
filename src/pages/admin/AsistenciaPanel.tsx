@@ -1,6 +1,46 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { asistenciaService } from '../../api';
+import { useAuth } from '../../context/AuthContext';
 
 const AsistenciaPanel: React.FC = () => {
+  const [estadisticas, setEstadisticas] = useState({
+    presentesHoy: 0,
+    totalEsperados: 0,
+    tasaAsistencia: 0,
+    llegadasTardias: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { usuario } = useAuth();
+
+  useEffect(() => {
+    cargarEstadisticas();
+  }, []);
+
+  const cargarEstadisticas = async () => {
+    try {
+      setLoading(true);
+      const stats = await asistenciaService.obtenerEstadisticas();
+      setEstadisticas(stats);
+    } catch (err) {
+      setError('Error al cargar estadísticas de asistencia');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>Cargando estadísticas de asistencia...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="asistencia-panel">
       <div className="page-header">
@@ -8,34 +48,41 @@ const AsistenciaPanel: React.FC = () => {
         <p className="page-subtitle">Controla la asistencia de participantes en tiempo real</p>
       </div>
 
+      {error && (
+        <div className="error-message">
+          <p>{error}</p>
+          <button onClick={() => setError(null)}>×</button>
+        </div>
+      )}
+
       <div className="panel-content">
         {/* Stats Cards */}
         <div className="stats-row">
           <div className="stat-card green">
             <div className="stat-icon">✅</div>
             <div className="stat-info">
-              <h3 className="stat-number">156</h3>
+              <h3 className="stat-number">{estadisticas.presentesHoy}</h3>
               <p className="stat-label">Presentes Hoy</p>
             </div>
           </div>
           <div className="stat-card blue">
             <div className="stat-icon">👥</div>
             <div className="stat-info">
-              <h3 className="stat-number">189</h3>
+              <h3 className="stat-number">{estadisticas.totalEsperados}</h3>
               <p className="stat-label">Total Esperados</p>
             </div>
           </div>
           <div className="stat-card orange">
             <div className="stat-icon">📊</div>
             <div className="stat-info">
-              <h3 className="stat-number">82%</h3>
+              <h3 className="stat-number">{estadisticas.tasaAsistencia}%</h3>
               <p className="stat-label">Tasa Asistencia</p>
             </div>
           </div>
           <div className="stat-card purple">
             <div className="stat-icon">🕐</div>
             <div className="stat-info">
-              <h3 className="stat-number">33</h3>
+              <h3 className="stat-number">{estadisticas.llegadasTardias}</h3>
               <p className="stat-label">Llegadas Tardías</p>
             </div>
           </div>

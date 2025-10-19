@@ -53,6 +53,18 @@ const Sidebar: React.FC = () => {
       ]
     },
     {
+      path: '/admin',
+      label: 'Administración',
+      icon: '⚙️',
+      roles: ['Administrador'],
+      children: [
+        { path: '/admin/usuarios', label: 'Usuarios', icon: '👤' },
+        { path: '/admin/talleres', label: 'Talleres', icon: '🛠️' },
+        { path: '/admin/competencias', label: 'Competencias', icon: '🏆' },
+        { path: '/admin/foros', label: 'Foros', icon: '💬' }
+      ]
+    },
+    {
       path: '/participantes',
       label: 'Participantes',
       icon: '👥',

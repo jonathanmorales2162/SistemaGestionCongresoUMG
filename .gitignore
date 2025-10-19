@@ -32,3 +32,6 @@ dist-ssr
 
 # Deployment documentation
 DEPLOYMENT.md
+
+# Trae AI project rules
+.trae/rules/project_rules.md

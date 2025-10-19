@@ -1,0 +1,1 @@
+export { uploadImageCloudinary } from './UploadService';

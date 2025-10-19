@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { Usuario, UsuarioLogin, UsuarioRegistro } from '../types/Usuario';
 import { usuariosService } from '../api/usuariosService';
+import { authUtils } from '../utils/helpers';
 
 interface AuthContextType {
   usuario: Usuario | null;
@@ -28,28 +29,48 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Verificar token al cargar la aplicación
   useEffect(() => {
     const initializeAuth = async () => {
-      const token = localStorage.getItem('token');
-      const usuarioGuardado = localStorage.getItem('usuario');
+      const token = authUtils.getToken();
+      const usuarioGuardado = authUtils.getUserData();
 
       if (token && usuarioGuardado) {
         try {
-          // Validar token con el backend
+          // Verificar si el token está expirado antes de hacer la petición
+          if (authUtils.isTokenExpired(token)) {
+            console.log('Token expirado, limpiando datos de autenticación');
+            clearAuthData();
+            setIsLoading(false);
+            return;
+          }
+          
+          // Validar token con el backend usando el endpoint específico
           const usuarioValidado = await usuariosService.validateToken();
+          
+          // Si la validación es exitosa, actualizar el estado y localStorage
           setUsuario(usuarioValidado);
-          // Actualizar datos en localStorage
-          localStorage.setItem('usuario', JSON.stringify(usuarioValidado));
+          authUtils.setUserData(usuarioValidado);
+          
+          console.log('Token validado exitosamente, usuario autenticado:', usuarioValidado.nombre);
         } catch (error) {
-          // Token inválido, limpiar localStorage
-          localStorage.removeItem('token');
-          localStorage.removeItem('usuario');
-          setUsuario(null);
+          // Token inválido o expirado, limpiar todo
+          console.log('Token inválido o expirado, limpiando datos de autenticación');
+          clearAuthData();
         }
+      } else {
+        // No hay token o usuario guardado
+        console.log('No hay datos de autenticación guardados');
+        clearAuthData();
       }
       setIsLoading(false);
     };
 
     initializeAuth();
   }, []);
+
+  // Función para limpiar datos de autenticación
+  const clearAuthData = () => {
+    authUtils.removeToken();
+    setUsuario(null);
+  };
 
   const login = async (credenciales: UsuarioLogin): Promise<void> => {
     try {
@@ -74,9 +95,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error('Datos de usuario no encontrados en la respuesta del servidor');
       }
       
-      // Guardar token y usuario en localStorage
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('usuario', JSON.stringify(response.usuario));
+      // Guardar token y usuario usando las utilidades
+      authUtils.setToken(response.token);
+      authUtils.setUserData(response.usuario);
       
       // Actualizar el estado del usuario
       setUsuario(response.usuario);
@@ -95,9 +116,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
       const response = await usuariosService.register(datosUsuario);
       
-      // Guardar token y usuario en localStorage
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('usuario', JSON.stringify(response.usuario));
+      // Guardar token y usuario usando las utilidades
+      authUtils.setToken(response.token);
+      authUtils.setUserData(response.usuario);
       
       setUsuario(response.usuario);
     } catch (error: any) {
@@ -108,21 +129,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = (): void => {
-    // Limpiar localStorage
-    localStorage.removeItem('token');
-    localStorage.removeItem('usuario');
-    
-    // Limpiar estado
-    setUsuario(null);
+    console.log('Cerrando sesión y limpiando datos de autenticación');
+    clearAuthData();
   };
 
   const updateUser = async (datosActualizados: Partial<Usuario>): Promise<void> => {
     try {
       const usuarioActualizado = await usuariosService.updateProfile(datosActualizados);
       
-      // Actualizar estado y localStorage
+      // Actualizar estado y localStorage usando las utilidades
       setUsuario(usuarioActualizado);
-      localStorage.setItem('usuario', JSON.stringify(usuarioActualizado));
+      authUtils.setUserData(usuarioActualizado);
     } catch (error: any) {
       throw new Error(error.message || 'Error al actualizar usuario');
     }

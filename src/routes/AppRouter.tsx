@@ -6,7 +6,19 @@ import ProtectedRoute from '../components/ProtectedRoute';
 import LandingPage from '../pages/LandingPage';
 import Dashboard from '../pages/Dashboard';
 import ForoConferencias from '../pages/ForoConferencias';
+import Profile from '../pages/Profile';
 import NotFound from '../pages/NotFound';
+
+// Importar páginas de Landing
+import Talleres from '../pages/Landing/Talleres';
+import Competencias from '../pages/Landing/Competencias';
+import Contacto from '../pages/Landing/Contacto';
+
+// Importar paneles de administración
+import TalleresPanel from '../pages/admin/TalleresPanel';
+import CompetenciasPanel from '../pages/admin/CompetenciasPanel';
+import ForosPanel from '../pages/admin/ForosPanel';
+import Usuarios from '../pages/admin/Usuarios';
 
 // Importar componentes de autenticación
 import LoginForm from '../components/Auth/LoginForm';
@@ -19,6 +31,9 @@ const AppRouter: React.FC = () => {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
+          <Route path="/talleres" element={<Talleres />} />
+          <Route path="/competencias" element={<Competencias />} />
+          <Route path="/contacto" element={<Contacto />} />
 
           {/* Rutas protegidas */}
           <Route 
@@ -35,6 +50,52 @@ const AppRouter: React.FC = () => {
             element={
               <ProtectedRoute>
                 <ForoConferencias />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/perfil" 
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Rutas de administración */}
+          <Route 
+            path="/admin/talleres" 
+            element={
+              <ProtectedRoute requiredRole="Admin">
+                <TalleresPanel />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/admin/competencias" 
+            element={
+              <ProtectedRoute requiredRole="Admin">
+                <CompetenciasPanel />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/admin/foros" 
+            element={
+              <ProtectedRoute requiredRole="Admin">
+                <ForosPanel />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/admin/usuarios" 
+            element={
+              <ProtectedRoute requiredRole="Admin">
+                <Usuarios />
               </ProtectedRoute>
             } 
           />

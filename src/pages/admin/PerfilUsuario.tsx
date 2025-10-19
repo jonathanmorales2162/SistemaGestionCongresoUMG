@@ -8,7 +8,7 @@ const PerfilUsuario: React.FC = () => {
     nombre: usuario?.nombre || '',
     correo: usuario?.correo || '',
     telefono: usuario?.telefono || '',
-    institucion: usuario?.colegio || '',
+    colegio: usuario?.colegio || '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -30,7 +30,7 @@ const PerfilUsuario: React.FC = () => {
       nombre: usuario?.nombre || '',
       correo: usuario?.correo || '',
       telefono: usuario?.telefono || '',
-      institucion: usuario?.colegio || '',
+      colegio: usuario?.colegio || '',
     });
     setIsEditing(false);
   };
@@ -144,18 +144,18 @@ const PerfilUsuario: React.FC = () => {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Institución</label>
+                <label className="form-label">Colegio</label>
                 {isEditing ? (
                   <input
                     type="text"
-                    name="institucion"
-                    value={formData.institucion}
+                    name="colegio"
+                    value={formData.colegio}
                     onChange={handleInputChange}
                     className="form-input"
                     placeholder="Ej: Universidad Mariano Gálvez"
                   />
                 ) : (
-                  <p className="form-value">{formData.institucion || 'No especificado'}</p>
+                  <p className="form-value">{formData.colegio || 'No especificado'}</p>
                 )}
               </div>
 

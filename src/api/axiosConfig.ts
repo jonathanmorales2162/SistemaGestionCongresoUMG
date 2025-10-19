@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { authUtils } from '../utils/helpers';
 
 // Configuración base de Axios
 const axiosInstance = axios.create({
@@ -12,7 +13,7 @@ const axiosInstance = axios.create({
 // Interceptor para agregar el token JWT automáticamente
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = authUtils.getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -32,12 +33,16 @@ axiosInstance.interceptors.response.use(
   (error) => {
     // Manejo global de errores
     if (error.response?.status === 401) {
-      // Token inválido o expirado - limpiar localStorage y redirigir al login
-      localStorage.removeItem('token');
-      localStorage.removeItem('usuario');
+      // Token inválido o expirado - limpiar localStorage
+      console.log('Token inválido detectado, limpiando datos de autenticación');
+      authUtils.removeToken();
       
-      // Evitar redirección infinita si ya estamos en login
-      if (window.location.pathname !== '/login') {
+      // Solo redirigir si no estamos en rutas de autenticación
+      const currentPath = window.location.pathname;
+      const authPaths = ['/login', '/register', '/'];
+      
+      if (!authPaths.includes(currentPath)) {
+        console.log('Redirigiendo al login debido a token inválido');
         window.location.href = '/login';
       }
     } else if (error.response?.status === 403) {

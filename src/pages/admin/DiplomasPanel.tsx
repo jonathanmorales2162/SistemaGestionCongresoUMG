@@ -1,6 +1,68 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { diplomasService } from '../../api';
+import { useAuth } from '../../context/AuthContext';
 
 const DiplomasPanel: React.FC = () => {
+  const [estadisticas, setEstadisticas] = useState({
+    diplomasGenerados: 0,
+    enviados: 0,
+    pendientes: 0,
+    elegibles: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { usuario } = useAuth();
+
+  useEffect(() => {
+    cargarEstadisticas();
+  }, []);
+
+  const cargarEstadisticas = async () => {
+    try {
+      setLoading(true);
+      const stats = await diplomasService.obtenerEstadisticas();
+      setEstadisticas(stats);
+    } catch (err) {
+      setError('Error al cargar estadísticas de diplomas');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGenerarDiplomas = async () => {
+    try {
+      await diplomasService.generarDiplomasMasivo();
+      await cargarEstadisticas();
+      alert('Diplomas generados exitosamente');
+    } catch (err) {
+      setError('Error al generar diplomas');
+      console.error('Error:', err);
+    }
+  };
+
+  const handleEnviarDiplomas = async () => {
+    try {
+      await diplomasService.enviarDiplomasMasivo();
+      await cargarEstadisticas();
+      alert('Diplomas enviados exitosamente');
+    } catch (err) {
+      setError('Error al enviar diplomas');
+      console.error('Error:', err);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>Cargando estadísticas de diplomas...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="diplomas-panel">
       <div className="page-header">
@@ -8,34 +70,41 @@ const DiplomasPanel: React.FC = () => {
         <p className="page-subtitle">Gestiona la creación y distribución de certificados de participación</p>
       </div>
 
+      {error && (
+        <div className="error-message">
+          <p>{error}</p>
+          <button onClick={() => setError(null)}>×</button>
+        </div>
+      )}
+
       <div className="panel-content">
         {/* Stats Cards */}
         <div className="stats-row">
           <div className="stat-card purple">
             <div className="stat-icon">🎓</div>
             <div className="stat-info">
-              <h3 className="stat-number">156</h3>
+              <h3 className="stat-number">{estadisticas.diplomasGenerados}</h3>
               <p className="stat-label">Diplomas Generados</p>
             </div>
           </div>
           <div className="stat-card green">
             <div className="stat-icon">📧</div>
             <div className="stat-info">
-              <h3 className="stat-number">142</h3>
+              <h3 className="stat-number">{estadisticas.enviados}</h3>
               <p className="stat-label">Enviados</p>
             </div>
           </div>
           <div className="stat-card orange">
             <div className="stat-icon">⏳</div>
             <div className="stat-info">
-              <h3 className="stat-number">14</h3>
+              <h3 className="stat-number">{estadisticas.pendientes}</h3>
               <p className="stat-label">Pendientes</p>
             </div>
           </div>
           <div className="stat-card blue">
             <div className="stat-icon">📋</div>
             <div className="stat-info">
-              <h3 className="stat-number">189</h3>
+              <h3 className="stat-number">{estadisticas.elegibles}</h3>
               <p className="stat-label">Elegibles</p>
             </div>
           </div>
@@ -43,17 +112,33 @@ const DiplomasPanel: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="action-buttons">
-          <button className="btn primary">
-            🎓 Generar Diplomas
+          <button 
+            className="btn btn-primary"
+            onClick={handleGenerarDiplomas}
+          >
+            <span className="btn-icon">🎓</span>
+            Generar Diplomas
           </button>
-          <button className="btn secondary">
-            📧 Enviar por Email
+          <button 
+            className="btn btn-secondary"
+            onClick={handleEnviarDiplomas}
+          >
+            <span className="btn-icon">📧</span>
+            Enviar por Email
           </button>
-          <button className="btn tertiary">
-            📄 Vista Previa
+          <button 
+            className="btn btn-outline"
+            onClick={() => {/* TODO: Implementar descarga de plantilla */}}
+          >
+            <span className="btn-icon">📄</span>
+            Descargar Plantilla
           </button>
-          <button className="btn quaternary">
-            ⚙️ Configurar Plantilla
+          <button 
+            className="btn btn-outline"
+            onClick={() => {/* TODO: Implementar configuración de diseño */}}
+          >
+            <span className="btn-icon">⚙️</span>
+            Configurar Diseño
           </button>
         </div>
 
