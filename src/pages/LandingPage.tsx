@@ -342,9 +342,9 @@ const LandingPage: React.FC = () => {
                   <div key={ponente.id_usuario} className="speaker-card">
                     <div className="speaker-image">
                       <div className="avatar">
-                        {ponente.foto_perfil ? (
+                        {(ponente.foto_url || ponente.foto_perfil) ? (
                           <img 
-                            src={ponente.foto_perfil} 
+                            src={ponente.foto_url || ponente.foto_perfil} 
                             alt={`${ponente.nombre} ${ponente.apellido}`}
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';

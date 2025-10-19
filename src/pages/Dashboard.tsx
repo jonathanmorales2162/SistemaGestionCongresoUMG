@@ -4,10 +4,11 @@ import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import { resultadosService } from '../api/resultadosService';
 import { competenciasService } from '../api/competenciasService';
+import UsuariosGrid from '../components/UsuariosGrid';
 
 const Dashboard: React.FC = () => {
   const { usuario } = useAuth();
-  const [selectedService, setSelectedService] = useState<string>('overview');
+  const [selectedService, setSelectedService] = useState<string>('usuarios');
   const [stats, setStats] = useState({
     totalResultados: 0,
     publicados: 0,
@@ -141,158 +142,14 @@ const Dashboard: React.FC = () => {
   ];
 
   const renderMainContent = () => {
-    if (selectedService === 'overview') {
-      return (
-        <div className="admin-overview">
-          <div className="overview-header">
-            <h1>Panel de Control</h1>
-            <p>Centro de Ayuda</p>
-          </div>
-          
-          {/* Estadísticas principales */}
-          <div className="stats-grid">
-            <div className="stat-card">
-              <div className="stat-header">
-                <h3>Resultados</h3>
-                <span className="stat-period">Ver todo</span>
-              </div>
-              <div className="stat-content">
-                <div className="stat-number">{loading ? '...' : stats.totalResultados}</div>
-                <div className="stat-details">
-                  <div className="stat-item">
-                    <span className="stat-label">Publicados</span>
-                    <span className="stat-value">{loading ? '...' : stats.publicados}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">Pendientes</span>
-                    <span className="stat-value">{loading ? '...' : stats.pendientes}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="stat-card">
-              <div className="stat-header">
-                <h3>Uso de Recursos</h3>
-                <span className="stat-period">27 ene - 3 feb</span>
-              </div>
-              <div className="stat-content">
-                <div className="stat-chart">
-                  <div className="chart-circle">
-                    <div className="chart-percentage">
-                      {loading ? '...' : Math.round((stats.publicados / Math.max(stats.totalResultados, 1)) * 100)}%
-                    </div>
-                  </div>
-                  <div className="chart-details">
-                    <div className="chart-item">
-                      <span className="chart-color blue"></span>
-                      <span>Publicados: {loading ? '...' : stats.publicados}</span>
-                    </div>
-                    <div className="chart-item">
-                      <span className="chart-color purple"></span>
-                      <span>Pendientes: {loading ? '...' : stats.pendientes}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="stat-card">
-              <div className="stat-header">
-                <h3>Competencias</h3>
-                <span className="stat-period">Total registradas</span>
-              </div>
-              <div className="stat-content">
-                <div className="stat-number">{loading ? '...' : stats.totalCompetencias}</div>
-                <div className="stat-details">
-                  <div className="stat-item">
-                    <span className="stat-label">Activas</span>
-                    <span className="stat-value">{loading ? '...' : stats.totalCompetencias}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">Participantes</span>
-                    <span className="stat-value">{loading ? '...' : stats.visualizaciones}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Resumen de actividades */}
-          <div className="charts-grid">
-            <div className="chart-card">
-              <div className="chart-header">
-                <h3>Actividades del Congreso</h3>
-                <span className="chart-period">Resumen general</span>
-              </div>
-              <div className="activity-summary">
-                <div className="activity-item">
-                  <span className="activity-icon">💬</span>
-                  <div className="activity-info">
-                    <span className="activity-label">Foros</span>
-                    <span className="activity-count">Disponibles</span>
-                  </div>
-                </div>
-                <div className="activity-item">
-                  <span className="activity-icon">🏆</span>
-                  <div className="activity-info">
-                    <span className="activity-label">Competencias</span>
-                    <span className="activity-count">{loading ? '...' : stats.totalCompetencias}</span>
-                  </div>
-                </div>
-                <div className="activity-item">
-                  <span className="activity-icon">🎓</span>
-                  <div className="activity-info">
-                    <span className="activity-label">Talleres</span>
-                    <span className="activity-count">Disponibles</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="chart-card">
-              <div className="chart-header">
-                <h3>Estado de Resultados</h3>
-                <span className="chart-period">Publicación</span>
-              </div>
-              <div className="chart-value">{loading ? '...' : stats.totalResultados} Total</div>
-              <div className="progress-bar">
-                <div 
-                  className="progress-fill" 
-                  style={{ 
-                    width: `${stats.totalResultados > 0 ? (stats.publicados / stats.totalResultados) * 100 : 0}%` 
-                  }}
-                ></div>
-              </div>
-              <div className="progress-label">
-                {loading ? '...' : Math.round((stats.publicados / Math.max(stats.totalResultados, 1)) * 100)}% Publicados
-              </div>
-            </div>
-          </div>
-
-          {/* Servicios administrativos */}
-          <div className="services-section">
-            <h2>Servicios Administrativos</h2>
-            <div className="services-grid">
-              {adminServices.map((service) => (
-                <div key={service.id} className="service-card">
-                  <div className="service-icon">{service.icon}</div>
-                  <div className="service-content">
-                    <h3 className="service-title">{service.name}</h3>
-                    <p>{service.description}</p>
-                    <Link to={service.route} className="btn btn-primary">
-                      Administrar
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      );
-    }
-
     const currentService = adminServices.find(s => s.id === selectedService);
+    
+    // Renderizar contenido específico para usuarios
+    if (selectedService === 'usuarios') {
+      return <UsuariosGrid />;
+    }
+    
+    // Para otros servicios, mostrar el contenido por defecto
     return (
       <div className="service-content">
         <div className="service-header">
@@ -337,14 +194,6 @@ const Dashboard: React.FC = () => {
           </div>
           
           <nav className="sidebar-nav">
-            <button
-              className={`nav-item ${selectedService === 'overview' ? 'active' : ''}`}
-              onClick={() => setSelectedService('overview')}
-            >
-              <span className="nav-icon">📊</span>
-              <span className="nav-label">Resumen</span>
-            </button>
-            
             {adminServices.map((service) => (
               <button
                 key={service.id}

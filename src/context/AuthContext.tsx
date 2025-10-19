@@ -11,7 +11,7 @@ interface AuthContextType {
   login: (credenciales: UsuarioLogin) => Promise<void>;
   register: (datosUsuario: UsuarioRegistro) => Promise<void>;
   logout: () => void;
-  updateUser: (datosActualizados: Partial<Usuario>) => Promise<void>;
+  updateUser: (usuarioActualizado: Usuario) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -133,15 +133,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     clearAuthData();
   };
 
-  const updateUser = async (datosActualizados: Partial<Usuario>): Promise<void> => {
+  const updateUser = async (usuarioActualizado: Usuario) => {
     try {
-      const usuarioActualizado = await usuariosService.updateProfile(datosActualizados);
+      console.log('AuthContext.updateUser - Usuario recibido:', usuarioActualizado);
+      console.log('AuthContext.updateUser - Usuario actual antes de actualizar:', usuario);
       
-      // Actualizar estado y localStorage usando las utilidades
       setUsuario(usuarioActualizado);
-      authUtils.setUserData(usuarioActualizado);
-    } catch (error: any) {
-      throw new Error(error.message || 'Error al actualizar usuario');
+      localStorage.setItem('usuario', JSON.stringify(usuarioActualizado));
+      
+      console.log('AuthContext.updateUser - Usuario actualizado en contexto y localStorage');
+    } catch (error) {
+      console.error('Error al actualizar usuario:', error);
     }
   };
 

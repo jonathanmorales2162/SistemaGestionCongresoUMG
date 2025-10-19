@@ -48,8 +48,62 @@ export const usuariosService = {
   getProfile: async (): Promise<Usuario> => {
     try {
       const response = await axiosInstance.get('/usuarios/perfil');
-      return response.data.usuario;
+      
+      // Verificar que la respuesta sea exitosa
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(`Error HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      // Intentar diferentes estructuras de respuesta (en orden de prioridad)
+      let usuario = null;
+      
+      // 1. Patrón estándar: { success: true, message: "...", data: Usuario }
+      if (response.data && response.data.success === true && response.data.data) {
+        usuario = response.data.data;
+      }
+      // 2. Patrón alternativo: { usuario: Usuario }
+      else if (response.data && response.data.usuario) {
+        usuario = response.data.usuario;
+      }
+      // 3. Patrón con perfil: { success: true, perfil: Usuario }
+      else if (response.data && response.data.perfil) {
+        usuario = response.data.perfil;
+      }
+      // 4. Patrón directo: Usuario (objeto directo)
+      else if (response.data && response.data.id_usuario) {
+        usuario = response.data;
+      }
+      // 4. Patrón con success pero sin data anidado: { success: true, ...Usuario }
+      else if (response.data && response.data.success === true && response.data.id_usuario) {
+        const { success, message, ...usuarioData } = response.data;
+        usuario = usuarioData;
+      }
+      
+      // Validar que tenemos un usuario válido
+      if (!usuario || typeof usuario !== 'object' || !usuario.id_usuario) {
+        console.error('❌ No se pudo extraer usuario válido de la respuesta:', response.data);
+        throw new Error('Respuesta del servidor no contiene datos de usuario válidos');
+      }
+      
+      return usuario;
+      
     } catch (error: unknown) {
+      console.error('❌ Error al obtener perfil:', error);
+      
+      // Si es un error de axios, extraer información adicional
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { status?: number; data?: any } };
+        
+        // Si es un error 401, el token puede haber expirado
+        if (axiosError.response?.status === 401) {
+          throw new Error('Token de autenticación inválido o expirado. Por favor, inicia sesión nuevamente.');
+        }
+        
+        if (axiosError.response?.data?.message) {
+          console.error('❌ Mensaje del servidor:', axiosError.response.data.message);
+        }
+      }
+      
       const errorMessage = error instanceof Error && 'response' in error 
         ? (error as { response?: { data?: { message?: string } } }).response?.data?.message 
         : 'Error al obtener perfil';
@@ -60,15 +114,75 @@ export const usuariosService = {
   // Actualizar perfil del usuario
   updateProfile: async (datosActualizados: Partial<Usuario>): Promise<Usuario> => {
     try {
-      // Según la documentación, el endpoint para actualizar perfil propio es PUT /usuarios/:id
-      // Pero necesitamos obtener el ID del usuario actual primero
+      // Obtener perfil actual
       const perfilActual = await usuariosService.getProfile();
-      const response = await axiosInstance.put(`/usuarios/${perfilActual.id_usuario}`, datosActualizados);
-      return response.data.data || response.data.usuario;
+      
+      if (!perfilActual || !perfilActual.id_usuario) {
+        throw new Error('No se pudo obtener el perfil actual del usuario');
+      }
+      
+      // Enviar PUT al backend usando el endpoint correcto según documentación
+      const endpoint = `/usuarios/perfil`;
+      console.log(`🚀 Enviando PUT a ${endpoint}:`, datosActualizados);
+      
+      const response = await axiosInstance.put(endpoint, datosActualizados);
+      
+      // Verificar si la respuesta es exitosa
+      if (response.status >= 200 && response.status < 300) {
+        // Intentar extraer el usuario actualizado de diferentes estructuras (en orden de prioridad)
+        let usuarioActualizado = null;
+        
+        // 1. Patrón estándar: { success: true, message: "...", data: Usuario }
+        if (response.data && response.data.success === true && response.data.data) {
+          usuarioActualizado = response.data.data;
+        }
+        // 2. Patrón alternativo: { usuario: Usuario }
+        else if (response.data && response.data.usuario) {
+          usuarioActualizado = response.data.usuario;
+        }
+        // 3. Patrón con perfil: { success: true, perfil: Usuario }
+        else if (response.data && response.data.perfil) {
+          usuarioActualizado = response.data.perfil;
+        }
+        // 4. Patrón directo: Usuario (objeto directo)
+         else if (response.data && response.data.id_usuario) {
+           usuarioActualizado = response.data;
+         }
+         // 5. Patrón con success pero sin data anidado: { success: true, ...Usuario }
+         else if (response.data && response.data.success === true && response.data.id_usuario) {
+           const { success, message, ...usuarioData } = response.data;
+           usuarioActualizado = usuarioData;
+         }
+        
+        // Si tenemos un usuario válido, retornarlo
+        if (usuarioActualizado && typeof usuarioActualizado === 'object' && usuarioActualizado.id_usuario) {
+          console.log('✅ Perfil actualizado exitosamente');
+          return usuarioActualizado;
+        }
+        
+        // Si no pudimos extraer el usuario, registrar la estructura recibida
+        console.error('⚠️ No se pudo extraer usuario de la respuesta:', response.data);
+      }
+      
+      // Si llegamos aquí, no pudimos extraer el usuario de la respuesta
+      const usuarioFallback = { ...perfilActual, ...datosActualizados };
+      return usuarioFallback;
+      
     } catch (error: unknown) {
+      console.error('❌ Error al actualizar perfil:', error);
+      
+      // Si es un error de axios, extraer información adicional
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { status?: number; data?: any } };
+        if (axiosError.response?.data?.message) {
+          console.error('❌ Mensaje del servidor:', axiosError.response.data.message);
+        }
+      }
+      
       const errorMessage = error instanceof Error && 'response' in error 
         ? (error as { response?: { data?: { message?: string } } }).response?.data?.message 
         : 'Error al actualizar perfil';
+      
       throw new Error(errorMessage || 'Error al actualizar perfil');
     }
   },

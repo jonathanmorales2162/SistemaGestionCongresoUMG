@@ -43,3 +43,9 @@ export interface AuthResponse {
   message: string;
 }
 
+export interface UsuarioResponse {
+  success: boolean;
+  message: string;
+  data: Usuario;
+}
+

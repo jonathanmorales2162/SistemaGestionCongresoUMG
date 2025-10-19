@@ -71,18 +71,6 @@ const Navbar: React.FC = () => {
               >
                 💬 Foros
               </Link>
-              <Link 
-                to="/eventos" 
-                className={`nav-link ${isActivePath('/eventos') ? 'active' : ''}`}
-              >
-                📅 Eventos
-              </Link>
-              <Link 
-                to="/recursos" 
-                className={`nav-link ${isActivePath('/recursos') ? 'active' : ''}`}
-              >
-                📚 Recursos
-              </Link>
             </>
           ) : (
             <>
@@ -135,12 +123,6 @@ const Navbar: React.FC = () => {
                   <div className="dropdown-divider"></div>
                   <Link to="/perfil" className="dropdown-item">
                     👤 Mi Perfil
-                  </Link>
-                  <Link to="/settings" className="dropdown-item">
-                    ⚙️ Configuración
-                  </Link>
-                  <Link to="/help" className="dropdown-item">
-                    ❓ Ayuda
                   </Link>
                   <div className="dropdown-divider"></div>
                   <button 
@@ -195,20 +177,6 @@ const Navbar: React.FC = () => {
                 >
                   💬 Foros
                 </Link>
-                <Link 
-                  to="/eventos" 
-                  className={`mobile-nav-link ${isActivePath('/eventos') ? 'active' : ''}`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  📅 Eventos
-                </Link>
-                <Link 
-                  to="/recursos" 
-                  className={`mobile-nav-link ${isActivePath('/recursos') ? 'active' : ''}`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  📚 Recursos
-                </Link>
                 <div className="mobile-menu-divider"></div>
                 <Link 
                   to="/profile" 
@@ -216,13 +184,6 @@ const Navbar: React.FC = () => {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   👤 Mi Perfil
-                </Link>
-                <Link 
-                  to="/settings" 
-                  className="mobile-nav-link"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  ⚙️ Configuración
                 </Link>
                 <button 
                   onClick={() => {
